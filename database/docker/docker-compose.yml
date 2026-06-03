@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+
+    container_name: assettrack_postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: assettrack
+      POSTGRES_USER: assettrack_user
+      POSTGRES_PASSWORD: assettrack_password
+
+      TZ: America/Sao_Paulo
+      PGTZ: America/Sao_Paulo
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../init:/docker-entrypoint-initdb.d
+
+    networks:
+      - assettrack_network
+
+volumes:
+  postgres_data:
+
+networks:
+  assettrack_network:
+    driver: bridge
