@@ -8,6 +8,8 @@ CREATE TABLE item_estoque (
 CREATE TABLE solicitacao_estoque (
     id_solicitacao_estoque UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     status_pedido VARCHAR(50) NOT NULL DEFAULT 'PENDENTE',
+    quantidade_solicitada INT NOT NULL,
+    data_solicitacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     id_usuario_solicitante UUID NOT NULL,
     id_item UUID NOT NULL,

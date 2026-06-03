@@ -28,4 +28,8 @@ public class Avaliacao {
     @OneToOne
     @JoinColumn(name = "id_manutencao", nullable = false)
     private Manutencao manutencao;
+
+    @OneToOne
+    @JoinColumn(name = "id_usuario_avaliador", nullable = false)
+    private Usuario autorizador;
 }
