@@ -10,8 +10,8 @@ services:
 
     environment:
       POSTGRES_DB: assettrack
-      POSTGRES_USER: assettrack_user
-      POSTGRES_PASSWORD: assettrack_password
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: AsTrack77*
 
       TZ: America/Sao_Paulo
       PGTZ: America/Sao_Paulo
@@ -21,7 +21,7 @@ services:
 
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ../init:/docker-entrypoint-initdb.d
+      - ./database/init:/docker-entrypoint-initdb.d
 
     networks:
       - assettrack_network
