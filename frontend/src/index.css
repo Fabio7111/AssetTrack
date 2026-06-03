@@ -1,0 +1,24 @@
+:root {
+  --color-primary: #00995D;    /* Verde Principal */
+  --color-secondary: #B1D34B;  /* Verde Limão*/
+  --color-dark: #004E4C;       /* Verde Escuro */
+  --color-accent: #F47920;     /* Laranja */
+  
+  --color-bg-main: #ECE3D9;    /* Bege super claro */
+  --color-earth: #D2A494;      /* Tom de terra */
+  
+  --color-danger-light: #F1CDCD;  /* Fundo para erros/descartes */
+  --color-warning-light: #FFE596; /* Fundo para alertas/manutenção */
+  --color-success-light: #CDE3BB; /* Fundo para sucesso/estoque */
+  --color-info-light: #A4D8DE;    /* Fundo para informações */
+
+  --color-text-main: #333333;
+  --color-text-light: #ffffff;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--color-bg-main);
+  color: var(--color-text-main);
+}

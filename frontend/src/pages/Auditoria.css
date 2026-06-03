@@ -1,0 +1,121 @@
+.inventario-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  animation: fadeIn 0.4s ease;
+}
+
+.inventario-header {
+  position: relative;
+  padding: 30px 40px;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--color-primary);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.inventario-header::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: var(--bg-banner); 
+  background-size: cover;
+  background-position: center;
+  opacity: 0.50; 
+  z-index: 1;
+}
+
+.inventario-header .header-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inventario-header h1 {
+  margin: 0 0 5px 0;
+  font-size: 26px;
+  color: #ffffff;
+}
+
+.inventario-header p {
+  margin: 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.header-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-auditoria {
+  background-color: #aed6f1;
+  color: #1a5276;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.btn-auditoria:hover {
+  background-color: #85c1e9;
+  transform: translateY(-2px);
+}
+
+.filters-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.filters-card h3 {
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  color: var(--color-dark);
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.filter-group select {
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #555;
+  background-color: #f9f9f9;
+  outline: none;
+  transition: border-color 0.2s;
+  cursor: pointer;
+}
+
+.filter-group select:focus {
+  border-color: var(--color-primary);
+  background-color: #fff;
+}
+
+.status-badge.ativo { background-color: rgba(39, 174, 96, 0.15); color: #1a2520; }
+.status-badge.em-manutenção { background-color: rgba(241, 196, 15, 0.15); color: #d35400; }
+.status-badge.em-estoque { background-color: rgba(52, 152, 219, 0.15); color: #2980b9; }
+.status-badge.baixa { background-color: rgba(189, 195, 199, 0.15); color: #7f8c8d; text-decoration: line-through;}

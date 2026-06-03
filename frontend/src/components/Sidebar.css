@@ -1,0 +1,226 @@
+.sidebar {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.sidebar.expanded { width: 250px; }
+.sidebar.collapsed { width: 70px; }
+
+.sidebar-header {
+  height: 80px;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0 16px;
+}
+
+.logo-top {
+  width: 175px;
+  height: auto;
+  object-fit: contain;
+}
+
+.logo-short-img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.nav-menu {
+  background-color: var(--color-dark);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 0;
+}
+
+.nav-menu::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+.nav-link {
+  padding: 10px 15px;
+  margin: 4px 15px; 
+  border-radius: 10px; 
+  color: var(--color-success-light);
+  text-decoration: none;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-light);
+}
+
+.nav-link.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-secondary);
+  font-weight: 500;
+}
+
+.collapsed .link-text { display: none; }
+.collapsed .nav-link {
+  justify-content: center;
+  padding: 12px 0;
+  margin: 4px 10px;
+}
+
+.sidebar-footer {
+  height: 80px;             
+  min-height: 80px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  background-color: var(--color-primary);
+}
+
+.collapsed .sidebar-footer {
+  flex-direction: column;
+  justify-content: center;
+  padding: 15px 0 20px 0;
+  height: auto;
+}
+
+.unimed-container {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  transition: max-width 0.3s ease, opacity 0.3s ease;
+  max-width: 160px;
+}
+
+.collapsed .unimed-container {
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.logo-bottom {
+  width: 150px;             
+  height: auto;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+.toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: var(--color-text-light);
+  font-size: 14px;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.main-content {
+  box-sizing: border-box;
+  padding: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-content {
+  padding: 25px 30px;
+  box-sizing: border-box;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.logo-link:hover {
+  transform: scale(1.05); 
+}
+
+.footer-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.collapsed .footer-actions {
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 15px;
+}
+
+.settings-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%; 
+  color: var(--color-text-light);
+  font-size: 16px; /* Tamanho do emoji da engrenagem */
+  width: 35px; 
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none; /* Tira o sublinhado do link */
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.settings-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+}
+
+.settings-btn.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+
+.menu-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  flex-shrink: 0; 
+  transition: transform 0.2s ease;
+}
+
+.arrow-icon {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+}
