@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import PrivateRoute from './components/PrivateRoute';
@@ -18,141 +18,58 @@ import Relatorios from './pages/Relatorios';
 import Configuracoes from './pages/Configuracoes';
 import Perfil from './pages/Perfil';
 
-function InternalLayout({ children }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+function InternalLayout() {
+    const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  return (
-    <div className="app-layout">
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      
-      <main 
-        className="main-content" 
-        style={{ 
-          marginLeft: isSidebarOpen ? '250px' : '70px',
-          width: isSidebarOpen ? 'calc(100% - 250px)' : 'calc(100% - 70px)',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-        }}
-      >
-        <Topbar />
-        
-        <div className="page-content">
-          {children}
+    return (
+        <div className="app-layout">
+            <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            <main
+                className="main-content"
+                style={{
+                    marginLeft: isSidebarOpen ? '250px' : '70px',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+                }}
+            >
+                <Topbar />
+                <div className="page-content">
+                    <Outlet />
+                </div>
+            </main>
         </div>
-      </main>
-    </div>
-  );
+    );
 }
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
+    return (
+        <BrowserRouter>
+            <Routes>
+                {/* Rotas Públicas */}
+                <Route path="/login" element={<Login />} />
 
-        <Route path="/" element={
-          //<PrivateRoute>
-            <InternalLayout>
-              <Dashboard />
-            </InternalLayout>
-          //</PrivateRoute>
-        } />
+                {/* Rotas Protegidas (Só acessíveis se tiver token) */}
+                <Route element={<PrivateRoute />}>
+                    <Route element={<InternalLayout />}>
+                        <Route path="/" element={<Dashboard />} />
+                        <Route path="/usuarios" element={<Usuarios />} />
+                        <Route path="/equipamentos" element={<Equipamentos />} />
+                        <Route path="/aquisicao" element={<Aquisicoes />} />
+                        <Route path="/manutencao" element={<Manutencoes />} />
+                        <Route path="/movimentacao" element={<Movimentacao />} />
+                        <Route path="/estoque" element={<Estoque />} />
+                        <Route path="/solicitacoes" element={<Solicitacoes />} />
+                        <Route path="/auditoria" element={<Auditoria />} />
+                        <Route path="/relatorios" element={<Relatorios />} />
+                        <Route path="/configuracoes" element={<Configuracoes />} />
+                        <Route path="/perfil" element={<Perfil />} />
+                    </Route>
+                </Route>
 
-        <Route path="/usuarios" element={
-          //<PrivateRoute>
-            <InternalLayout>
-              <Usuarios />
-            </InternalLayout>
-          //</PrivateRoute>
-        } />
-
-        <Route path="/equipamentos" element={
-          //<PrivateRoute>
-            <InternalLayout>
-              <Equipamentos />
-            </InternalLayout>
-          //</PrivateRoute>
-        } />
-
-        <Route path="/aquisicao" element={
-          // <PrivateRoute>
-            <InternalLayout>
-              <Aquisicoes />
-            </InternalLayout>
-          // </PrivateRoute>
-        } />
-        
-        <Route path="/manutencao" element={
-            // <PrivateRoute>
-              <InternalLayout>
-                <Manutencoes />
-              </InternalLayout>
-            // </PrivateRoute>
-        } />
-
-        <Route path="/movimentacao" element={
-            // <PrivateRoute>
-              <InternalLayout>
-                <Movimentacao />
-              </InternalLayout>
-            // </PrivateRoute>
-          } />
-          
-          <Route path="/estoque" element={
-            // <PrivateRoute>
-              <InternalLayout>
-                <Estoque />
-              </InternalLayout>
-            // </PrivateRoute>
-          } />
-
-          <Route path="/solicitacoes" element={
-          // <PrivateRoute>
-            <InternalLayout>
-              <Solicitacoes />
-            </InternalLayout>
-          // </PrivateRoute>
-          } />
-
-          <Route path="/auditoria" element={
-          // <PrivateRoute>
-            <InternalLayout>
-              <Auditoria />
-            </InternalLayout>
-          // </PrivateRoute>
-          } />
-
-          <Route path="/relatorios" element={
-          // <PrivateRoute>
-            <InternalLayout>
-              <Relatorios />
-            </InternalLayout>
-          // </PrivateRoute>
-          } />
-
-          <Route path="/configuracoes" element={
-          // <PrivateRoute>
-            <InternalLayout>
-              <Configuracoes />
-            </InternalLayout>
-          // </PrivateRoute>
-          } />
-
-          <Route path="/perfil" element={
-          // <PrivateRoute>
-            <InternalLayout>
-              <Perfil />
-            </InternalLayout>
-          // </PrivateRoute>
-          } />
-
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
-  );
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;

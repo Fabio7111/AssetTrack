@@ -22,13 +22,13 @@ public class AuthenticationController {
     private TokenService tokenService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody AuthenticationDTO data) {
+    public ResponseEntity<?> login(@RequestBody AuthenticationDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
         var token = tokenService.generateToken((Usuario) auth.getPrincipal());
 
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(java.util.Map.of("token", token));
     }
 
     public record AuthenticationDTO(String email, String senha) {}

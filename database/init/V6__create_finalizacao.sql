@@ -33,8 +33,24 @@ CREATE TABLE descarte (
           REFERENCES usuario(id)
 );
 
-
 CREATE INDEX idx_termo_usuario ON termo_responsabilidade(id_usuario);
 CREATE INDEX idx_termo_equipamento ON termo_responsabilidade(id_equipamento);
 CREATE INDEX idx_descarte_equipamento ON descarte(id_equipamento);
 CREATE INDEX idx_descarte_data ON descarte(data_descarte);
+
+INSERT INTO perfil_acesso (id, nome_perfil, descricao) VALUES
+   (
+       gen_random_uuid(),
+       'USUARIO',
+       'Acesso base. Permissão restrita para consulta de ativos vinculados, abertura de solicitações (requisições/manutenção) e visualização de movimentações próprias.'
+   ),
+   (
+       gen_random_uuid(),
+       'MODERADOR',
+       'Acesso operacional. Permissão para gerir inventário, registrar movimentações de hardware, atualizar status de manutenção e extrair relatórios setoriais.'
+   ),
+   (
+       gen_random_uuid(),
+       'ADMINISTRADOR',
+       'Acesso irrestrito (SysAdmin). Controle total sobre configurações globais, trilhas de auditoria de banco, gestão de acessos (IAM) e aprovação de aquisições.'
+   );

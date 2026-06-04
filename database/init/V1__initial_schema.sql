@@ -28,7 +28,6 @@ CREATE TABLE log_acesso (
             REFERENCES usuario(id)
 );
 
-
 CREATE INDEX idx_usuario_email ON usuario(email);
 CREATE INDEX idx_usuario_perfil ON usuario(id_perfil);
 CREATE INDEX idx_log_usuario ON log_acesso(id_usuario);

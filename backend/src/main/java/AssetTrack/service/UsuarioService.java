@@ -45,6 +45,26 @@ public class UsuarioService {
         return new UsuarioResponseDTO(novoUsuario);
     }
 
+    public UsuarioResponseDTO registrarAcessoPublico(UsuarioRequestDTO data) {
+        if(usuarioRepository.findByEmail(data.email()).isPresent()) {
+            throw new IllegalArgumentException("Este e-mail já está cadastrado no sistema.");
+        }
+
+        PerfilAcesso perfilPadrao = perfilRepository.findByNomePerfil("USUARIO")
+                .orElseThrow(() -> new IllegalStateException("Erro interno: Perfil padrão não configurado."));
+
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setNome(data.nome());
+        novoUsuario.setEmail(data.email());
+        novoUsuario.setSenhaHash(passwordEncoder.encode(data.senha()));
+        novoUsuario.setStatus("ATIVO");
+        novoUsuario.setPerfil(perfilPadrao);
+
+        usuarioRepository.save(novoUsuario);
+
+        return new UsuarioResponseDTO(novoUsuario);
+    }
+
     public UsuarioResponseDTO atualizarUsuario(UUID id, UsuarioRequestDTO data) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
@@ -65,6 +85,14 @@ public class UsuarioService {
         return new UsuarioResponseDTO(usuario);
     }
 
+    public void redefinirSenha(String email, String novaSenha) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("E-mail não encontrado no sistema."));
+
+        usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
+        usuarioRepository.save(usuario);
+    }
+
     public void deletarUsuario(UUID id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
@@ -77,5 +105,11 @@ public class UsuarioService {
         return usuarioRepository.findAll().stream()
                 .map(UsuarioResponseDTO::new)
                 .toList();
+    }
+
+    public void verificarSeEmailExiste(String email) {
+        if (usuarioRepository.findByEmail(email).isEmpty()) {
+            throw new IllegalArgumentException("E-mail não cadastrado. Por favor, solicite acesso.");
+        }
     }
 }

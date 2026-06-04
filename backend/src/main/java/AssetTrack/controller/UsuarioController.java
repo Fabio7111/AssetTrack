@@ -41,4 +41,24 @@ public class UsuarioController {
         usuarioService.deletarUsuario(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/solicitar-acesso")
+    public ResponseEntity<UsuarioResponseDTO> solicitarAcesso(@RequestBody UsuarioRequestDTO data) {
+        UsuarioResponseDTO novoUsuario = usuarioService.registrarAcessoPublico(data);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+    }
+
+    public record RecuperarSenhaDTO(String email, String novaSenha) {}
+
+    @PostMapping("/recuperar-senha")
+    public ResponseEntity<Void> recuperarSenha(@RequestBody RecuperarSenhaDTO data) {
+        usuarioService.redefinirSenha(data.email(), data.novaSenha());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/verificar-email")
+    public ResponseEntity<Void> verificarEmail(@RequestParam String email) {
+        usuarioService.verificarSeEmailExiste(email);
+        return ResponseEntity.ok().build();
+    }
 }
