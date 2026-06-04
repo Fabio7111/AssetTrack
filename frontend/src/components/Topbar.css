@@ -25,17 +25,9 @@
   transition: opacity 0.2s, transform 0.2s;
 }
 
-.slogan-word.track {
-  color: #a4d8de;
-}
-
-.slogan-word.manage {
-  color: #f47920;
-}
-
-.slogan-word.optimize {
-  color: #2ecc71;
-}
+.slogan-word.track { color: #a4d8de; }
+.slogan-word.manage { color: #f47920; }
+.slogan-word.optimize { color: #2ecc71; }
 
 .topbar-slogan:hover .slogan-word {
   opacity: 1;
@@ -48,19 +40,76 @@
   gap: 20px;
 }
 
-.notifications-container {
-  position: relative;
+.user-profile-trigger, .btn-logout-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s;
+  background: transparent;
+  color: #ffffff;
 }
+
+.btn-logout-trigger {
+  justify-content: center;
+  padding: 6px 10px;
+}
+
+.logout-icon {
+  width: 22px;
+  height: 22px;
+  filter: brightness(0) invert(1);
+}
+
+.user-profile-trigger:hover, .btn-logout-trigger:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+}
+
+.user-profile-trigger.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-bottom-color: #ffffff;
+}
+
+.topbar-icon {
+  width: 22px;
+  height: 22px;
+  filter: brightness(0) invert(1);
+  display: block;
+}
+
+.avatar-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.logout-icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+}
+
+.logout-text {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.notifications-container { position: relative; }
 
 .btn-icon-topbar {
   background: transparent;
   border: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
-  font-size: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
   cursor: pointer;
   position: relative;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 8px;
   transition: all 0.2s;
   display: flex;
@@ -71,11 +120,6 @@
 .btn-icon-topbar:hover {
   background-color: rgba(255, 255, 255, 0.08);
   border-bottom-color: rgba(255, 255, 255, 0.5);
-}
-
-.btn-icon-topbar.active {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-bottom-color: #ffffff;
 }
 
 .notification-badge {
@@ -91,7 +135,7 @@
 
 .notifications-popup {
   position: absolute;
-  top: 50px;
+  top: 60px;
   right: 0;
   width: 320px;
   background-color: #ffffff;
@@ -111,30 +155,7 @@
   background-color: #f8f9fa;
 }
 
-.popup-header h4 {
-  margin: 0;
-  font-size: 13px;
-  color: #333;
-  font-weight: 700;
-}
-
-.btn-clear-all {
-  background: none;
-  border: none;
-  color: #888;
-  font-size: 12px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.btn-clear-all:hover {
-  color: #e74c3c;
-}
-
-.popup-body {
-  max-height: 260px;
-  overflow-y: auto;
-}
+.popup-body { max-height: 260px; overflow-y: auto; }
 
 .notification-item {
   display: flex;
@@ -142,95 +163,10 @@
   padding: 15px 20px;
   border-bottom: 1px solid #f5f5f5;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
 
-.notification-item:hover {
-  background-color: #fdfdfd;
-}
+.user-name { font-weight: 600; font-size: 14px; }
 
-.notification-item.unread {
-  background-color: rgba(164, 216, 222, 0.06);
-}
-
-.noti-icon {
-  font-size: 15px;
-  margin-top: 2px;
-}
-
-.noti-content p {
-  margin: 0 0 4px 0;
-  font-size: 13px;
-  color: #444;
-  line-height: 1.4;
-}
-
-.noti-content span {
-  font-size: 11px;
-  color: #999;
-  display: block;
-}
-
-.popup-footer {
-  padding: 12px;
-  text-align: center;
-  background-color: #f8f9fa;
-  border-top: 1px solid #eee;
-}
-
-.popup-footer button {
-  background: none;
-  border: none;
-  color: #27ae60;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  width: 100%;
-}
-
-.popup-footer button:hover {
-  text-decoration: underline;
-}
-
-.user-profile-trigger {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
-  transition: all 0.2s;
-}
-
-.user-profile-trigger:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  border-bottom-color: rgba(255, 255, 255, 0.5);
-}
-
-.user-profile-trigger.active {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-bottom-color: #ffffff;
-}
-
-.avatar-small {
-  width: 32px;
-  height: 32px;
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-}
-
-.user-name {
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-/* Animação de Entrada */
 .animate-fade-in {
   animation: topbarDropdown 0.2s ease-out;
 }
