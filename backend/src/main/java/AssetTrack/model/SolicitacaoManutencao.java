@@ -28,4 +28,8 @@ public class SolicitacaoManutencao {
     @ManyToOne
     @JoinColumn(name = "id_usuario_solicitante", nullable = false)
     private Usuario usuarioSolicitante;
+
+    @ManyToOne
+    @JoinColumn(name = "id_equipamento", nullable = false)
+    private Equipamento equipamento;
 }
