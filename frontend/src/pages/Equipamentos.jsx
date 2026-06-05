@@ -13,21 +13,20 @@ function Equipamentos() {
   const [aquisicoes, setAquisicoes] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados para Filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSetor, setFilterSetor] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  // NOVOS: Filtros de período
   const [filterDataInicio, setFilterDataInicio] = useState('');
   const [filterDataFim, setFilterDataFim] = useState('');
 
-  // Estados para os Modais
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
 
   const [editingEq, setEditingEq] = useState(null);
   const [selectedEq, setSelectedEq] = useState(null);
+
+  const [deleteError, setDeleteError] = useState('');
 
   const [formData, setFormData] = useState({
     nomeEquipamento: '',
@@ -135,7 +134,7 @@ function Equipamentos() {
           nomeEquipamento: eq.nomeEquipamento || '',
           numeroSerie: eq.numeroSerie || '',
           idSetor: idSetorEncontrado,
-          idAquisicao: ''
+          idAquisicao: eq.idAquisicao || ''
         } :
         { nomeEquipamento: '', numeroSerie: '', idSetor: '', idAquisicao: '' }
     );
@@ -156,10 +155,15 @@ function Equipamentos() {
 
   const openDeleteModal = (eq) => {
     setSelectedEq(eq);
+    setDeleteError('');
     setDeleteModalOpen(true);
   };
 
-  // --- Funções de API ---
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setDeleteError('');
+  };
+
   const handleSaveEq = async (e) => {
     e.preventDefault();
     try {
@@ -181,16 +185,23 @@ function Equipamentos() {
 
   const confirmDelete = async () => {
     try {
+      setDeleteError('');
       await api.delete(`/equipamentos/${selectedEq.idEquipamento}`);
       fetchEquipments();
       setDeleteModalOpen(false);
       setSelectedEq(null);
     } catch (error) {
-      alert("Erro ao inativar/excluir equipamento. Verifique se existem dependências.");
+      setDeleteError(error.response?.data?.message || "Erro ao inativar/excluir equipamento. Pode estar vinculado a manutenções ou auditorias.");
     }
   };
 
   if (loading) return <div className="dashboard-loading">Carregando métricas do sistema...</div>;
+
+  const getAquisicaoText = (idAq) => {
+    if (!idAq) return 'Nenhuma / Não vinculada';
+    const aq = aquisicoes.find(a => (a.idAquisicao || a.id) === idAq);
+    return aq ? `NF: ${aq.numeroNotaFiscal || 'S/N'} - ${aq.fornecedor}` : 'Desconhecida';
+  };
 
   return (
       <div className="equipamentos-container">
@@ -378,19 +389,17 @@ function Equipamentos() {
                       </select>
                     </div>
 
-                    {!editingEq && (
-                        <div className="form-group">
-                          <label>Aquisição (Opcional)</label>
-                          <select value={formData.idAquisicao} onChange={e => setFormData({...formData, idAquisicao: e.target.value})}>
-                            <option value="">Nenhuma / Não registada</option>
-                            {aquisicoes.map(a => (
-                                <option key={a.idAquisicao || a.id} value={a.idAquisicao || a.id}>
-                                  NF: {a.numeroNotaFiscal} - {a.fornecedor}
-                                </option>
-                            ))}
-                          </select>
-                        </div>
-                    )}
+                    <div className="form-group">
+                      <label>Aquisição (Opcional)</label>
+                      <select value={formData.idAquisicao} onChange={e => setFormData({...formData, idAquisicao: e.target.value})}>
+                        <option value="">Nenhuma / Não registada</option>
+                        {aquisicoes.map(a => (
+                            <option key={a.idAquisicao || a.id} value={a.idAquisicao || a.id}>
+                              NF: {a.numeroNotaFiscal} - {a.fornecedor}
+                            </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
 
                   <div className="modal-footer">
@@ -437,9 +446,15 @@ function Equipamentos() {
                     </div>
                   </div>
 
-                  <div className="form-group">
-                    <label>Status</label>
-                    <input type="text" value={selectedEq.statusAtual} disabled />
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Aquisição Vinculada</label>
+                      <input type="text" value={getAquisicaoText(selectedEq.idAquisicao)} disabled />
+                    </div>
+                    <div className="form-group">
+                      <label>Status</label>
+                      <input type="text" value={selectedEq.statusAtual} disabled />
+                    </div>
                   </div>
                 </div>
 
@@ -455,15 +470,23 @@ function Equipamentos() {
               <div className="modal-content">
                 <div className="modal-header">
                   <h2>Confirmar Inativação</h2>
-                  <button className="btn-close" onClick={() => setDeleteModalOpen(false)}>&times;</button>
+                  <button className="btn-close" onClick={closeDeleteModal}>&times;</button>
                 </div>
                 <div className="modal-form">
                   <p style={{ margin: 0, color: '#444', fontSize: '15px' }}>
                     Tem certeza que deseja inativar o equipamento <strong>{selectedEq.nomeEquipamento}</strong>?
                   </p>
+
+                  {/* Renderização condicional do Erro */}
+                  {deleteError && (
+                      <div style={{ marginTop: '15px', padding: '12px 15px', backgroundColor: '#fdecea', color: '#c0392b', borderRadius: '6px', fontSize: '14px', borderLeft: '4px solid #e74c3c' }}>
+                        <strong>Ação Negada:</strong> {deleteError}
+                      </div>
+                  )}
                 </div>
+
                 <div className="modal-footer" style={{ padding: '20px 25px' }}>
-                  <button className="btn-secondary" onClick={() => setDeleteModalOpen(false)}>Cancelar</button>
+                  <button className="btn-secondary" onClick={closeDeleteModal}>Cancelar</button>
                   <button className="btn-primary" style={{ backgroundColor: '#e74c3c', color: 'white' }} onClick={confirmDelete}>Inativar Equipamento</button>
                 </div>
               </div>

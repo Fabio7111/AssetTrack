@@ -34,13 +34,13 @@ public class SecurityConfigurations {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        // 1. Libera as requisições de Preflight do React (CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/solicitar-acesso").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/recuperar-senha").permitAll()
                         .requestMatchers(HttpMethod.GET, "/usuarios/verificar-email").permitAll()
                         .requestMatchers("/perfis", "/perfis/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/aquisicoes")
@@ -25,5 +26,16 @@ public class AquisicaoController {
     @GetMapping
     public ResponseEntity<List<AquisicaoResponseDTO>> listar() {
         return ResponseEntity.ok(aquisicaoService.listarAquisicoes());
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<AquisicaoResponseDTO> atualizar(@PathVariable UUID id, @RequestBody AquisicaoRequestDTO data) {
+        return ResponseEntity.ok(aquisicaoService.atualizarAquisicao(id, data));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
+        aquisicaoService.deletarAquisicao(id);
+        return ResponseEntity.noContent().build();
     }
 }
