@@ -60,6 +60,29 @@ function Usuarios() {
     return matchesSearch && matchesPerfil && matchesStatus;
   });
 
+  // --- Função para Exportar para Excel ---
+  const exportToExcel = () => {
+    const headers = ['Nome', 'E-mail', 'Perfil', 'Status'];
+
+    const csvRows = filteredUsers.map(user => [
+      user.nome,
+      user.email,
+      user.nomePerfil,
+      user.status
+    ].map(val => `"${val}"`).join(','));
+
+    const csvContent = "\uFEFF" + [headers.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'relatorio_usuarios.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleOpenModal = (user = null) => {
     const isEdit = user && user.id;
 
@@ -175,6 +198,12 @@ function Usuarios() {
         </div>
 
         <section className="table-section">
+          {/* Adicionado o cabeçalho com o botão de exportar */}
+          <div className="table-header">
+            <h2>Gerenciamento de Usuários</h2>
+            <button className="btn-secondary" onClick={exportToExcel}>Exportar para Excel</button>
+          </div>
+
           <table className="custom-table">
             <thead>
             <tr>

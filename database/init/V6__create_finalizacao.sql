@@ -54,3 +54,8 @@ INSERT INTO perfil_acesso (id, nome_perfil, descricao) VALUES
        'ADMINISTRADOR',
        'Acesso irrestrito (SysAdmin). Controle total sobre configurações globais, trilhas de auditoria de banco, gestão de acessos (IAM) e aprovação de aquisições.'
    );
+
+INSERT INTO setor (id_setor, nome_setor, localizacao_fisica) VALUES
+    (gen_random_uuid(), 'TI', 'Estoque'),
+    (gen_random_uuid(), 'Financeiro', NULL),
+    (gen_random_uuid(), 'NAAS', 'Faturamento');

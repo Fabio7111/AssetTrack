@@ -34,7 +34,7 @@ public class Equipamento {
     @JoinColumn(name = "id_setor", nullable = false)
     private Setor setor;
 
-    @OneToOne
-    @JoinColumn(name = "id_aquisicao", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_aquisicao")
     private Aquisicao aquisicao;
 }
