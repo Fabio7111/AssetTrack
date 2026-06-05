@@ -37,7 +37,7 @@ public class UsuarioService {
         novoUsuario.setNome(data.nome());
         novoUsuario.setEmail(data.email());
         novoUsuario.setSenhaHash(passwordEncoder.encode(data.senha()));
-        novoUsuario.setStatus("ATIVO");
+        novoUsuario.setStatus("ATIVO"); // Novo usuário começa ATIVO
         novoUsuario.setPerfil(perfil);
 
         usuarioRepository.save(novoUsuario);
@@ -70,9 +70,13 @@ public class UsuarioService {
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
 
         usuario.setNome(data.nome());
+        usuario.setEmail(data.email());
 
         if (data.senha() != null && !data.senha().isBlank()) {
             usuario.setSenhaHash(passwordEncoder.encode(data.senha()));
+            if ("INATIVO".equals(usuario.getStatus())) {
+                usuario.setStatus("ATIVO");
+            }
         }
 
         if (data.idPerfil() != null) {
@@ -90,6 +94,8 @@ public class UsuarioService {
                 .orElseThrow(() -> new IllegalArgumentException("E-mail não encontrado no sistema."));
 
         usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
+        usuario.setStatus("ATIVO");
+
         usuarioRepository.save(usuario);
     }
 
