@@ -20,7 +20,9 @@ public class Manutencao {
     @Column(name = "tipo_manutencao", nullable = false, length = 50)
     private String tipoManutencao;
 
+    @Column(nullable = true)
     private LocalDateTime dataInicio;
+
     private LocalDateTime dataConclusao;
 
     @Column(name = "descricao_servico", length = 500)
@@ -30,7 +32,7 @@ public class Manutencao {
     private BigDecimal custoManutencao;
 
     @OneToOne
-    @JoinColumn(name = "id_solicitacao_manutencao", nullable = false)
+    @JoinColumn(name = "id_solicitacao_manutencao", nullable = true)
     private SolicitacaoManutencao solicitacao;
 
     @ManyToOne
@@ -40,4 +42,7 @@ public class Manutencao {
     @ManyToOne
     @JoinColumn(name = "id_equipamento", nullable = false)
     private Equipamento equipamento;
+
+    @Column(name = "status", length = 30)
+    private String status = "ATIVA";
 }

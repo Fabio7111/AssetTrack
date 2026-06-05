@@ -59,3 +59,5 @@ INSERT INTO setor (id_setor, nome_setor, localizacao_fisica) VALUES
     (gen_random_uuid(), 'TI', 'Estoque'),
     (gen_random_uuid(), 'Financeiro', NULL),
     (gen_random_uuid(), 'NAAS', 'Faturamento');
+
+ALTER TABLE manutencao ADD COLUMN status VARCHAR(30) DEFAULT 'ATIVA';
