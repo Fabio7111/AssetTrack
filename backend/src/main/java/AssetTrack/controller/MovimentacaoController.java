@@ -23,10 +23,15 @@ public class MovimentacaoController {
         return ResponseEntity.ok(movimentacaoService.listarTodas());
     }
 
+    @GetMapping("/atrasadas")
+    public ResponseEntity<List<MovimentacaoResponseDTO>> listarAtrasadas() {
+        return ResponseEntity.ok(movimentacaoService.listarAtrasadas());
+    }
+
     @PostMapping("/transferir")
     public ResponseEntity<MovimentacaoResponseDTO> transferir(@RequestBody MovimentacaoRequestDTO data) {
-        MovimentacaoResponseDTO novaMovimentacao = movimentacaoService.transferirEquipamento(data);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novaMovimentacao);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(movimentacaoService.transferirEquipamento(data));
     }
 
     @PutMapping("/{id}")

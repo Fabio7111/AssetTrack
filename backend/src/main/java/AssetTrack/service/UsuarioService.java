@@ -16,19 +16,13 @@ import java.util.UUID;
 @Service
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private PerfilAcessoRepository perfilRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    @Autowired private UsuarioRepository      usuarioRepository;
+    @Autowired private PerfilAcessoRepository  perfilRepository;
+    @Autowired private PasswordEncoder         passwordEncoder;
 
     public UsuarioResponseDTO criarUsuario(UsuarioRequestDTO data) {
-        if(usuarioRepository.findByEmail(data.email()).isPresent()) {
+        if (usuarioRepository.findByEmail(data.email()).isPresent())
             throw new IllegalArgumentException("Este e-mail já está cadastrado no sistema.");
-        }
 
         PerfilAcesso perfil = perfilRepository.findById(data.idPerfil())
                 .orElseThrow(() -> new IllegalArgumentException("Perfil de acesso não encontrado."));
@@ -37,18 +31,16 @@ public class UsuarioService {
         novoUsuario.setNome(data.nome());
         novoUsuario.setEmail(data.email());
         novoUsuario.setSenhaHash(passwordEncoder.encode(data.senha()));
-        novoUsuario.setStatus("ATIVO"); // Novo usuário começa ATIVO
+        novoUsuario.setStatus("ATIVO");
         novoUsuario.setPerfil(perfil);
 
         usuarioRepository.save(novoUsuario);
-
         return new UsuarioResponseDTO(novoUsuario);
     }
 
     public UsuarioResponseDTO registrarAcessoPublico(UsuarioRequestDTO data) {
-        if(usuarioRepository.findByEmail(data.email()).isPresent()) {
+        if (usuarioRepository.findByEmail(data.email()).isPresent())
             throw new IllegalArgumentException("Este e-mail já está cadastrado no sistema.");
-        }
 
         PerfilAcesso perfilPadrao = perfilRepository.findByNomePerfil("USUARIO")
                 .orElseThrow(() -> new IllegalStateException("Erro interno: Perfil padrão não configurado."));
@@ -61,7 +53,6 @@ public class UsuarioService {
         novoUsuario.setPerfil(perfilPadrao);
 
         usuarioRepository.save(novoUsuario);
-
         return new UsuarioResponseDTO(novoUsuario);
     }
 
@@ -74,9 +65,7 @@ public class UsuarioService {
 
         if (data.senha() != null && !data.senha().isBlank()) {
             usuario.setSenhaHash(passwordEncoder.encode(data.senha()));
-            if ("INATIVO".equals(usuario.getStatus())) {
-                usuario.setStatus("ATIVO");
-            }
+            if ("INATIVO".equals(usuario.getStatus())) usuario.setStatus("ATIVO");
         }
 
         if (data.idPerfil() != null) {
@@ -89,13 +78,23 @@ public class UsuarioService {
         return new UsuarioResponseDTO(usuario);
     }
 
+    public void trocarSenha(Usuario usuario, String senhaAtual, String novaSenha) {
+        if (!passwordEncoder.matches(senhaAtual, usuario.getSenhaHash()))
+            throw new IllegalArgumentException("Senha atual incorreta.");
+
+        if (novaSenha == null || novaSenha.isBlank())
+            throw new IllegalArgumentException("A nova senha não pode ser vazia.");
+
+        usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
+        usuarioRepository.save(usuario);
+    }
+
     public void redefinirSenha(String email, String novaSenha) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("E-mail não encontrado no sistema."));
 
         usuario.setSenhaHash(passwordEncoder.encode(novaSenha));
         usuario.setStatus("ATIVO");
-
         usuarioRepository.save(usuario);
     }
 
@@ -114,8 +113,7 @@ public class UsuarioService {
     }
 
     public void verificarSeEmailExiste(String email) {
-        if (usuarioRepository.findByEmail(email).isEmpty()) {
+        if (usuarioRepository.findByEmail(email).isEmpty())
             throw new IllegalArgumentException("E-mail não cadastrado. Por favor, solicite acesso.");
-        }
     }
 }

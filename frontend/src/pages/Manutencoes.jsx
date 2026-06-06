@@ -12,7 +12,6 @@ function Manutencoes() {
   const [tecnicos, setTecnicos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados de Modais
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -20,7 +19,6 @@ function Manutencoes() {
   const [selectedManutencao, setSelectedManutencao] = useState(null);
   const [editingManutencao, setEditingManutencao] = useState(null);
 
-  // Estados de Filtro
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTipo, setFilterTipo] = useState('');
   const [filterStatus, setFilterStatus] = useState(''); // NOVO: Filtro de Status
@@ -77,18 +75,13 @@ function Manutencoes() {
     }
   };
 
-  // === LÓGICA DE STATUS REVISADA ===
   const getStatus = (m) => {
-    // 1. A prioridade máxima é verificar se foi cancelada no backend
     if (m.status && m.status.toUpperCase() === 'CANCELADA') return 'Cancelada';
 
-    // 2. Se tem data de conclusão, está concluída
     if (m.dataConclusao) return 'Concluída';
 
-    // 3. Se não tem data de início, está aguardando (Aberta)
     if (!m.dataInicio) return 'Aberta';
 
-    // 4. Lógica de tempo para Em Andamento vs Pendente
     const hoje = new Date();
     const inicio = new Date(m.dataInicio);
     if (inicio > hoje) return 'Pendente';
@@ -149,7 +142,6 @@ function Manutencoes() {
     setIsModalOpen(true);
   };
 
-  // Sem Pop-ups! Fechamento silencioso e rápido.
   const handleSave = async (e) => {
     e.preventDefault();
     try {
@@ -175,7 +167,7 @@ function Manutencoes() {
     try {
       await api.delete(`/manutencoes/${selectedManutencao.idManutencao}`);
       setDeleteModalOpen(false);
-      fetchManutencoes(); // A tabela atualiza silenciosamente mostrando "Cancelada"
+      fetchManutencoes();
     } catch (error) {
       alert("Erro ao cancelar a manutenção.");
     }
@@ -268,7 +260,6 @@ function Manutencoes() {
             <option value="CORRETIVA">Corretiva</option>
           </select>
 
-          {/* NOVO: Filtro de Status */}
           <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="filter-select">
             <option value="">Todos os Status</option>
             <option value="Aberta">Aberta</option>
@@ -344,7 +335,6 @@ function Manutencoes() {
           </table>
         </section>
 
-        {/* MODAL DE CADASTRO / EDIÇÃO */}
         {isModalOpen && (
             <div className="modal-overlay">
               <div className="modal-content">
@@ -410,7 +400,6 @@ function Manutencoes() {
             </div>
         )}
 
-        {/* MODAL DE DETALHES */}
         {viewModalOpen && selectedManutencao && (
             <div className="modal-overlay">
               <div className="modal-content">
@@ -480,7 +469,6 @@ function Manutencoes() {
             </div>
         )}
 
-        {/* MODAL DE CANCELAMENTO */}
         {deleteModalOpen && selectedManutencao && (
             <div className="modal-overlay">
               <div className="modal-content">

@@ -35,16 +35,14 @@ const calcularStatus = (mov) => {
 };
 
 const statusMap = {
-  'agendado': 'Agendado',
-  'em-uso': 'Em Uso',
-  'atrasado': 'Atrasado',
+  'agendado':   'Agendado',
+  'em-uso':     'Em Uso',
+  'atrasado':   'Atrasado',
   'finalizado': 'Finalizado',
-  'cancelado': 'Cancelado',
+  'cancelado':  'Cancelado',
 };
 
-const getStatusClass = (status) => {
-  return status.toLowerCase();
-};
+const getStatusClass = (status) => status.toLowerCase();
 
 function Movimentacao() {
   const [movimentacoes, setMovimentacoes] = useState([]);
@@ -70,13 +68,14 @@ function Movimentacao() {
   };
   const emptyMov = {
     idEquipamento: '', idSetorOrigem: '', idSetorDestino: '',
-    dataInicio: '', dataConclusao: '', observacao: '', idMovimentacao: null, idUsuarioResponsavel: ''
+    dataInicio: '', dataConclusao: '', observacao: '',
+    idMovimentacao: null, idUsuarioResponsavel: ''
   };
 
   const [formAlocacao,     setFormAlocacao]     = useState(emptyAlocacao);
   const [formMovimentacao, setFormMovimentacao] = useState(emptyMov);
   const [selectedMov,      setSelectedMov]      = useState(null);
-  const [modalError, setModalError] = useState('');
+  const [modalError,       setModalError]       = useState('');
   const [deleteError,      setDeleteError]      = useState('');
 
   useEffect(() => { carregarDados(); }, []);
@@ -116,18 +115,15 @@ function Movimentacao() {
     e.preventDefault();
     try {
       setModalError('');
-
       const payload = {
         idEquipamento:        formAlocacao.idEquipamento,
         idSetorDestino:       formAlocacao.idSetor,
         idUsuarioResponsavel: formAlocacao.idUsuario || null,
-        dataInicio:    formAlocacao.dataInicio    ? formAlocacao.dataInicio    + 'T00:00:00' : null,
-        dataConclusao: formAlocacao.dataConclusao ? formAlocacao.dataConclusao + 'T00:00:00' : null,
+        dataInicio:    formAlocacao.dataInicio    ? formAlocacao.dataInicio    + ':00' : null,
+        dataConclusao: formAlocacao.dataConclusao ? formAlocacao.dataConclusao + ':00' : null,
         observacao:    formAlocacao.observacao    || null,
       };
-
       await api.post('/movimentacoes/transferir', payload);
-
       setActiveModal(null);
       carregarDados();
     } catch (error) {
@@ -135,7 +131,32 @@ function Movimentacao() {
     }
   };
 
-    const handleDeleteMovimentacao = async () => {
+  const handleSaveMovimentacao = async (e) => {
+    e.preventDefault();
+    try {
+      setModalError('');
+      const payload = {
+        idEquipamento:        formMovimentacao.idEquipamento,
+        idSetorOrigem:        formMovimentacao.idSetorOrigem  || null,
+        idSetorDestino:       formMovimentacao.idSetorDestino,
+        idUsuarioResponsavel: formMovimentacao.idUsuarioResponsavel || null,
+        dataInicio:    formMovimentacao.dataInicio    ? formMovimentacao.dataInicio    + ':00' : null,
+        dataConclusao: formMovimentacao.dataConclusao ? formMovimentacao.dataConclusao + ':00' : null,
+        observacao:    formMovimentacao.observacao    || null,
+      };
+      if (activeModal === 'editar') {
+        await api.put(`/movimentacoes/${formMovimentacao.idMovimentacao}`, payload);
+      } else {
+        await api.post('/movimentacoes/transferir', payload);
+      }
+      setActiveModal(null);
+      carregarDados();
+    } catch (error) {
+      setModalError(error.response?.data?.message || 'Erro na operação.');
+    }
+  };
+
+  const handleDeleteMovimentacao = async () => {
     try {
       setDeleteError('');
       await api.delete(`/movimentacoes/${selectedMov.idMovimentacao}`);
@@ -147,32 +168,29 @@ function Movimentacao() {
     }
   };
 
-  const handleSaveMovimentacao = async (e) => {
-    e.preventDefault();
-    try {
-      setModalError('');
+  // ── EXPORTAR PARA EXCEL (CSV) ──────────────────────────────────────────────
+  const exportToExcel = () => {
+    const headers = ['ID', 'Equipamento', 'Origem', 'Destino', 'Data Início', 'Data Conclusão', 'Status', 'Observação'];
+    const csvRows = filteredMovimentacoes.map((mov, index) => [
+      index + 1,
+      mov.equipamento        || '—',
+      mov.setorOrigem        || 'Estoque',
+      mov.setorDestino       || '—',
+      mov.dataInicio         ? new Date(mov.dataInicio).toLocaleDateString('pt-BR')         : '—',
+      mov.dataConclusao      ? new Date(mov.dataConclusao).toLocaleDateString('pt-BR')      : '—',
+      statusMap[calcularStatus(mov)] || calcularStatus(mov),
+      mov.observacao         || '—',
+    ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
 
-      const payload = {
-        idEquipamento:        formMovimentacao.idEquipamento,
-        idSetorOrigem:        formMovimentacao.idSetorOrigem  || null,
-        idSetorDestino:       formMovimentacao.idSetorDestino,
-        idUsuarioResponsavel: formMovimentacao.idUsuarioResponsavel || null,
-        dataInicio:    formMovimentacao.dataInicio    ? formMovimentacao.dataInicio    + 'T00:00:00' : null,
-        dataConclusao: formMovimentacao.dataConclusao ? formMovimentacao.dataConclusao + 'T00:00:00' : null,
-        observacao:    formMovimentacao.observacao    || null,
-      };
-
-      if (activeModal === 'editar') {
-        await api.put(`/movimentacoes/${formMovimentacao.idMovimentacao}`, payload);
-      } else {
-        await api.post('/movimentacoes/transferir', payload);
-      }
-
-      setActiveModal(null);
-      carregarDados();
-    } catch (error) {
-      setModalError(error.response?.data?.message || 'Erro na operação.');
-    }
+    const csvContent = '\uFEFF' + [headers.join(','), ...csvRows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href  = url;
+    link.setAttribute('download', 'relatorio_movimentacoes.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const filteredMovimentacoes = movimentacoes.filter(mov => {
@@ -189,11 +207,11 @@ function Movimentacao() {
       const movDate = mov.dataInicio ? new Date(mov.dataInicio) : new Date(mov.dataMovimentacao);
       movDate.setHours(0, 0, 0, 0);
       if (filterDataInicio) {
-        const start = new Date(filterDataInicio + 'T00:00:00');
+        const start = new Date(filterDataInicio);
         if (movDate < start) matchesData = false;
       }
       if (filterDataFim) {
-        const end = new Date(filterDataFim + 'T00:00:00');
+        const end = new Date(filterDataFim);
         if (movDate > end) matchesData = false;
       }
     }
@@ -233,27 +251,19 @@ function Movimentacao() {
 
   const equipamentosAtivos = equipamentos.filter(eq => eq.statusAtual?.toUpperCase() === 'ATIVO');
 
-  if (loading) return <div className="loading-state">Carregando painel...</div>;
-
   const messages = {
-    today: 'Hoje',
-    previous: 'Voltar',
-    next: 'Avançar',
-    month: 'Mês',
-    week: 'Semana',
-    day: 'Dia',
-    agenda: 'Agenda',
-
-    date: 'Data',
-    time: 'Hora',
-    event: 'Evento',
-
+    today: 'Hoje', previous: 'Voltar', next: 'Avançar',
+    month: 'Mês', week: 'Semana', day: 'Dia', agenda: 'Agenda',
+    date: 'Data', time: 'Hora', event: 'Evento',
     noEventsInRange: 'Nenhum evento neste período',
   };
+
+  if (loading) return <div className="loading-state">Carregando painel...</div>;
 
   return (
       <div className="movimentacao-container">
 
+        {/* ── HEADER ── */}
         <header className="movimentacao-header" style={{ '--bg-banner': `url(${imagemFundo})` }}>
           <div className="header-content">
             <div>
@@ -271,19 +281,20 @@ function Movimentacao() {
           </div>
         </header>
 
+        {/* ── MÉTRICAS ── */}
         <section className="metrics-grid">
           <div className="metric-card highlight">
             <div className="metric-icon">💻</div>
             <div className="metric-info">
               <h3>Em Uso</h3>
-              <p className="metric-value">{movimentacoes.filter(m => calcularStatus(m) === 'Em Uso').length}</p>
+              <p className="metric-value">{movimentacoes.filter(m => calcularStatus(m) === 'em-uso').length}</p>
             </div>
           </div>
           <div className="metric-card warning">
             <div className="metric-icon">⚠️</div>
             <div className="metric-info">
               <h3>Atrasados</h3>
-              <p className="metric-value">{movimentacoes.filter(m => calcularStatus(m) === 'Atrasado').length}</p>
+              <p className="metric-value">{movimentacoes.filter(m => calcularStatus(m) === 'atrasado').length}</p>
             </div>
           </div>
           <div className="metric-card dark-mode">
@@ -295,6 +306,7 @@ function Movimentacao() {
           </div>
         </section>
 
+        {/* ── FILTROS ── */}
         <div className="filters-container">
           <input
               type="text"
@@ -305,11 +317,11 @@ function Movimentacao() {
           />
           <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="filter-select">
             <option value="">Todos os Status</option>
-            <option value="Em Uso">Em Uso</option>
-            <option value="Agendado">Agendado</option>
-            <option value="Atrasado">Atrasado</option>
-            <option value="Finalizado">Finalizado</option>
-            <option value="Cancelado">Cancelado</option>
+            <option value="em-uso">Em Uso</option>
+            <option value="agendado">Agendado</option>
+            <option value="atrasado">Atrasado</option>
+            <option value="finalizado">Finalizado</option>
+            <option value="cancelado">Cancelado</option>
           </select>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>De:</span>
@@ -319,12 +331,19 @@ function Movimentacao() {
           </div>
         </div>
 
+        {/* ── TABELA / CALENDÁRIO ── */}
         <section className="table-section">
           <div className="table-header">
             <h2>Painel Logístico</h2>
-            <div className="view-toggle">
-              <button className={`btn-toggle ${viewMode === 'tabela'     ? 'active' : ''}`} onClick={() => setViewMode('tabela')}>📑 Tabela</button>
-              <button className={`btn-toggle ${viewMode === 'calendario' ? 'active' : ''}`} onClick={() => setViewMode('calendario')}>📅 Calendário</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {/* Exportar fica à esquerda dos toggles */}
+              <button className="btn-secondary" onClick={exportToExcel}>
+                Exportar para Excel
+              </button>
+              <div className="view-toggle">
+                <button className={`btn-toggle ${viewMode === 'tabela'     ? 'active' : ''}`} onClick={() => setViewMode('tabela')}>📑 Tabela</button>
+                <button className={`btn-toggle ${viewMode === 'calendario' ? 'active' : ''}`} onClick={() => setViewMode('calendario')}>📅 Calendário</button>
+              </div>
             </div>
           </div>
 
@@ -349,11 +368,7 @@ function Movimentacao() {
                         return (
                             <tr key={mov.idMovimentacao}>
                               <td style={{ textAlign: 'center' }}>{index + 1}</td>
-                              <td
-                                  className="fw-bold col-equipamento"
-                                  style={{ textAlign: 'center' }}
-                                  title={mov.equipamento}
-                              >
+                              <td className="fw-bold col-equipamento" style={{ textAlign: 'center' }} title={mov.equipamento}>
                                 {mov.equipamento}
                               </td>
                               <td style={{ textAlign: 'center' }}>{mov.setorOrigem || 'Estoque'}</td>
@@ -361,7 +376,7 @@ function Movimentacao() {
                               <td style={{ textAlign: 'center' }}>{formatDate(mov.dataInicio || mov.dataMovimentacao)}</td>
                               <td style={{ textAlign: 'center' }}>
                           <span className={`status-badge ${getStatusClass(status)}`}>
-                            {status}
+                            {statusMap[status] || status}
                           </span>
                               </td>
                               <td style={{ textAlign: 'center' }}>
@@ -370,21 +385,19 @@ function Movimentacao() {
                                     <img src={detalhesIcon} alt="Detalhes" className="action-icon" />
                                   </button>
                                   <button className="btn-icon" title="Editar" onClick={() => {
-                                    const equipamento = equipamentos.find(e => e.nomeEquipamento === mov.equipamento);
+                                    const equipamento  = equipamentos.find(e => e.nomeEquipamento === mov.equipamento);
                                     const setorDestino = setores.find(s => s.nomeSetor === mov.setorDestino);
-                                    const setorOrigem = setores.find(s => s.nomeSetor === mov.setorOrigem);
-
+                                    const setorOrigem  = setores.find(s => s.nomeSetor === mov.setorOrigem);
                                     setFormMovimentacao({
-                                      idMovimentacao: mov.idMovimentacao,
-                                      idEquipamento: equipamento?.idEquipamento || '',
-                                      idSetorOrigem: setorOrigem?.idSetor || '',
-                                      idSetorDestino: setorDestino?.idSetor || '',
-                                      idUsuarioResponsavel: mov.idUsuarioResponsavel || '',
-                                      dataInicio: mov.dataInicio ? mov.dataInicio.substring(0, 10) : '',
-                                      dataConclusao: mov.dataConclusao ? mov.dataConclusao.substring(0, 10) : '',
-                                      observacao: mov.observacao || '',
+                                      idMovimentacao:       mov.idMovimentacao,
+                                      idEquipamento:        equipamento?.idEquipamento        || '',
+                                      idSetorOrigem:        setorOrigem?.idSetor              || '',
+                                      idSetorDestino:       setorDestino?.idSetor             || '',
+                                      idUsuarioResponsavel: mov.idUsuarioResponsavel          || '',
+                                      dataInicio:    mov.dataInicio    ? mov.dataInicio.substring(0, 16)    : '',
+                                      dataConclusao: mov.dataConclusao ? mov.dataConclusao.substring(0, 16) : '',
+                                      observacao:    mov.observacao    || '',
                                     });
-
                                     setActiveModal('editar');
                                   }}>
                                     <img src={editarIcon} alt="Editar" className="action-icon" />
@@ -413,23 +426,16 @@ function Movimentacao() {
                     localizer={localizer}
                     events={getCalendarEvents()}
                     style={{ height: 500 }}
-
                     date={date}
                     onNavigate={(newDate) => setDate(newDate)}
-
                     view={view}
                     onView={(newView) => setView(newView)}
-
                     culture="pt-BR"
                     messages={messages}
                     views={['month', 'week', 'day']}
-
                     eventPropGetter={(event) => ({
                       style: {
-                        backgroundColor:
-                            event.type === 'MANUTENCAO'
-                                ? '#d35400'
-                                : 'var(--color-primary)'
+                        backgroundColor: event.type === 'MANUTENCAO' ? '#d35400' : 'var(--color-primary)'
                       }
                     })}
                 />
@@ -437,6 +443,7 @@ function Movimentacao() {
           )}
         </section>
 
+        {/* ══ MODAL — Nova Alocação ══ */}
         {activeModal === 'alocacao' && (
             <div className="modal-overlay">
               <div className="modal-content">
@@ -448,11 +455,7 @@ function Movimentacao() {
                   <div className="form-row">
                     <div className="form-group">
                       <label>Equipamento</label>
-                      <select
-                          value={formAlocacao.idEquipamento}
-                          onChange={e => setFormAlocacao({ ...formAlocacao, idEquipamento: e.target.value })}
-                          required
-                      >
+                      <select value={formAlocacao.idEquipamento} onChange={e => setFormAlocacao({ ...formAlocacao, idEquipamento: e.target.value })} required>
                         <option value="">Selecione...</option>
                         {equipamentosAtivos.map(eq => (
                             <option key={eq.idEquipamento} value={eq.idEquipamento}>{eq.nomeEquipamento}</option>
@@ -461,11 +464,7 @@ function Movimentacao() {
                     </div>
                     <div className="form-group">
                       <label>Setor Destino</label>
-                      <select
-                          value={formAlocacao.idSetor}
-                          onChange={e => setFormAlocacao({ ...formAlocacao, idSetor: e.target.value })}
-                          required
-                      >
+                      <select value={formAlocacao.idSetor} onChange={e => setFormAlocacao({ ...formAlocacao, idSetor: e.target.value })} required>
                         <option value="">Selecione...</option>
                         {setores.map(s => <option key={s.idSetor} value={s.idSetor}>{s.nomeSetor}</option>)}
                       </select>
@@ -473,10 +472,7 @@ function Movimentacao() {
                   </div>
                   <div className="form-group">
                     <label>Usuário Responsável</label>
-                    <select
-                        value={formAlocacao.idUsuario}
-                        onChange={e => setFormAlocacao({ ...formAlocacao, idUsuario: e.target.value })}
-                    >
+                    <select value={formAlocacao.idUsuario} onChange={e => setFormAlocacao({ ...formAlocacao, idUsuario: e.target.value })}>
                       <option value="">Selecione...</option>
                       {usuarios.map(u => <option key={u.id} value={u.id}>{u.nome}</option>)}
                     </select>
@@ -496,15 +492,7 @@ function Movimentacao() {
                     <textarea value={formAlocacao.observacao} onChange={e => setFormAlocacao({ ...formAlocacao, observacao: e.target.value })} />
                   </div>
                   {modalError && (
-                      <div style={{
-                        marginTop: '15px',
-                        padding: '12px 15px',
-                        backgroundColor: '#fdecea',
-                        color: '#c0392b',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        borderLeft: '4px solid #e74c3c'
-                      }}>
+                      <div style={{ padding: '12px 15px', backgroundColor: '#fdecea', color: '#c0392b', borderRadius: '6px', fontSize: '14px', borderLeft: '4px solid #e74c3c' }}>
                         <strong>Erro:</strong> {modalError}
                       </div>
                   )}
@@ -517,6 +505,7 @@ function Movimentacao() {
             </div>
         )}
 
+        {/* ══ MODAL — Nova Movimentação / Editar ══ */}
         {(activeModal === 'movimentacao' || activeModal === 'editar') && (
             <div className="modal-overlay">
               <div className="modal-content">
@@ -527,12 +516,7 @@ function Movimentacao() {
                 <form onSubmit={handleSaveMovimentacao} className="modal-form">
                   <div className="form-group">
                     <label>Equipamento</label>
-                    <select
-                        value={formMovimentacao.idEquipamento}
-                        onChange={e => handleEquipamentoChange(e.target.value)}
-                        required
-                        disabled={activeModal === 'editar'}
-                    >
+                    <select value={formMovimentacao.idEquipamento} onChange={e => handleEquipamentoChange(e.target.value)} required disabled={activeModal === 'editar'}>
                       <option value="">Selecione...</option>
                       {equipamentosAtivos.map(eq => (
                           <option key={eq.idEquipamento} value={eq.idEquipamento}>{eq.nomeEquipamento}</option>
@@ -542,22 +526,14 @@ function Movimentacao() {
                   <div className="form-row">
                     <div className="form-group">
                       <label>Setor de Origem</label>
-                      <select
-                          value={formMovimentacao.idSetorOrigem}
-                          onChange={e => setFormMovimentacao({ ...formMovimentacao, idSetorOrigem: e.target.value })}
-                          required
-                      >
+                      <select value={formMovimentacao.idSetorOrigem} onChange={e => setFormMovimentacao({ ...formMovimentacao, idSetorOrigem: e.target.value })} required>
                         <option value="">Selecione...</option>
                         {setores.map(s => <option key={s.idSetor} value={s.idSetor}>{s.nomeSetor}</option>)}
                       </select>
                     </div>
                     <div className="form-group">
                       <label>Setor Destino</label>
-                      <select
-                          value={formMovimentacao.idSetorDestino}
-                          onChange={e => setFormMovimentacao({ ...formMovimentacao, idSetorDestino: e.target.value })}
-                          required
-                      >
+                      <select value={formMovimentacao.idSetorDestino} onChange={e => setFormMovimentacao({ ...formMovimentacao, idSetorDestino: e.target.value })} required>
                         <option value="">Selecione...</option>
                         {setores.map(s => <option key={s.idSetor} value={s.idSetor}>{s.nomeSetor}</option>)}
                       </select>
@@ -566,19 +542,9 @@ function Movimentacao() {
                   <div className="form-row">
                     <div className="form-group">
                       <label>Responsável</label>
-                      <select
-                          value={formMovimentacao.idUsuarioResponsavel}
-                          onChange={e =>
-                              setFormMovimentacao({
-                                ...formMovimentacao,
-                                idUsuarioResponsavel: e.target.value
-                              })
-                          }
-                      >
+                      <select value={formMovimentacao.idUsuarioResponsavel} onChange={e => setFormMovimentacao({ ...formMovimentacao, idUsuarioResponsavel: e.target.value })}>
                         <option value="">Selecione...</option>
-                        {usuarios.map(u => (
-                            <option key={u.id} value={u.id}>{u.nome}</option>
-                        ))}
+                        {usuarios.map(u => <option key={u.id} value={u.id}>{u.nome}</option>)}
                       </select>
                     </div>
                     <div className="form-group">
@@ -595,15 +561,7 @@ function Movimentacao() {
                     <textarea value={formMovimentacao.observacao} onChange={e => setFormMovimentacao({ ...formMovimentacao, observacao: e.target.value })} />
                   </div>
                   {modalError && (
-                      <div style={{
-                        marginTop: '15px',
-                        padding: '12px 15px',
-                        backgroundColor: '#fdecea',
-                        color: '#c0392b',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        borderLeft: '4px solid #e74c3c'
-                      }}>
+                      <div style={{ padding: '12px 15px', backgroundColor: '#fdecea', color: '#c0392b', borderRadius: '6px', fontSize: '14px', borderLeft: '4px solid #e74c3c' }}>
                         <strong>Erro:</strong> {modalError}
                       </div>
                   )}
@@ -618,6 +576,7 @@ function Movimentacao() {
             </div>
         )}
 
+        {/* ══ MODAL — Detalhes ══ */}
         {activeModal === 'detalhes' && selectedMov && (
             <div className="modal-overlay">
               <div className="modal-content">
@@ -642,13 +601,7 @@ function Movimentacao() {
                   </div>
                   <div className="form-group">
                     <label>Responsável</label>
-                    <input
-                        type="text"
-                        value={
-                            usuarios.find(u => u.id === selectedMov.idUsuarioResponsavel)?.nome || '—'
-                        }
-                        disabled
-                    />
+                    <input type="text" value={usuarios.find(u => u.id === selectedMov.idUsuarioResponsavel)?.nome || '—'} disabled />
                   </div>
                   <div className="form-row">
                     <div className="form-group">
@@ -662,7 +615,7 @@ function Movimentacao() {
                   </div>
                   <div className="form-group">
                     <label>Status</label>
-                    <input type="text" value={calcularStatus(selectedMov)} disabled />
+                    <input type="text" value={statusMap[calcularStatus(selectedMov)] || calcularStatus(selectedMov)} disabled />
                   </div>
                   <div className="form-group">
                     <label>Observação</label>
@@ -676,6 +629,7 @@ function Movimentacao() {
             </div>
         )}
 
+        {/* ══ MODAL — Excluir ══ */}
         {activeModal === 'excluir' && selectedMov && (
             <div className="modal-overlay">
               <div className="modal-content">
@@ -685,8 +639,7 @@ function Movimentacao() {
                 </div>
                 <div className="modal-form">
                   <p style={{ margin: 0, color: '#444', fontSize: '15px' }}>
-                    Tem certeza que deseja excluir a movimentação do equipamento{' '}
-                    <strong>{selectedMov.equipamento}</strong>?
+                    Tem certeza que deseja excluir a movimentação do equipamento <strong>{selectedMov.equipamento}</strong>?
                   </p>
                   {deleteError ? (
                       <div style={{ marginTop: '15px', padding: '12px 15px', backgroundColor: '#fdecea', color: '#c0392b', borderRadius: '6px', fontSize: '14px', borderLeft: '4px solid #e74c3c' }}>
@@ -700,11 +653,7 @@ function Movimentacao() {
                 </div>
                 <div className="modal-footer" style={{ padding: '20px 25px' }}>
                   <button className="btn-secondary" onClick={() => setActiveModal(null)}>Cancelar</button>
-                  <button
-                      className="btn-primary"
-                      style={{ backgroundColor: '#e74c3c', color: 'white' }}
-                      onClick={handleDeleteMovimentacao}
-                  >
+                  <button className="btn-primary" style={{ backgroundColor: '#e74c3c', color: 'white' }} onClick={handleDeleteMovimentacao}>
                     Excluir Movimentação
                   </button>
                 </div>

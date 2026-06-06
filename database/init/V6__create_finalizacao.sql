@@ -71,3 +71,31 @@ ALTER TABLE movimentacao
 UPDATE movimentacao
 SET status = 'AGENDADO'
 WHERE status IS NULL;
+
+ALTER TABLE equipamento ALTER COLUMN id_aquisicao DROP NOT NULL;
+
+CREATE TABLE configuracao_sistema (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome_organizacao VARCHAR(255) NOT NULL,
+  fuso_horario VARCHAR(100) NOT NULL,
+  email_suporte VARCHAR(255) NOT NULL,
+  alerta_baixo_estoque BOOLEAN DEFAULT TRUE,
+  alerta_devolucao_atrasada BOOLEAN DEFAULT TRUE
+);
+
+INSERT INTO configuracao_sistema (
+    id,
+    nome_organizacao,
+    telefone,
+    email_suporte,
+    alerta_baixo_estoque,
+    alerta_devolucao_atrasada
+)
+VALUES (
+   gen_random_uuid(),
+   'Unimed Assis',
+   '(18) 3302-3000',
+   'ti@unimedassis.exemplo.com',
+   true,
+   true
+       );

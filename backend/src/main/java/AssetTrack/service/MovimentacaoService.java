@@ -23,12 +23,21 @@ import java.util.stream.Collectors;
 public class MovimentacaoService {
 
     @Autowired private MovimentacaoRepository movimentacaoRepository;
-    @Autowired private EquipamentoRepository equipamentoRepository;
-    @Autowired private SetorRepository setorRepository;
-    @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private EquipamentoRepository  equipamentoRepository;
+    @Autowired private SetorRepository        setorRepository;
+    @Autowired private UsuarioRepository      usuarioRepository;
 
     public List<MovimentacaoResponseDTO> listarTodas() {
         return movimentacaoRepository.findAll().stream()
+                .map(MovimentacaoResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<MovimentacaoResponseDTO> listarAtrasadas() {
+        return movimentacaoRepository.findAll().stream()
+                .filter(m -> "EM_USO".equalsIgnoreCase(m.getStatus())
+                        && m.getDataConclusao() != null
+                        && m.getDataConclusao().isBefore(LocalDateTime.now()))
                 .map(MovimentacaoResponseDTO::new)
                 .collect(Collectors.toList());
     }
@@ -59,9 +68,7 @@ public class MovimentacaoService {
         movimentacao.setSetorDestino(setorDestino);
         movimentacao.setResponsavel(responsavel);
         movimentacao.setDataMovimentacao(LocalDateTime.now());
-
         movimentacao.setStatus("AGENDADO");
-
         movimentacao.setDataInicio(data.dataInicio());
         movimentacao.setDataConclusao(data.dataConclusao());
         movimentacao.setObservacao(data.observacao());

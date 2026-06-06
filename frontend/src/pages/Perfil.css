@@ -18,10 +18,10 @@
   content: "";
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background-image: var(--bg-banner); 
+  background-image: var(--bg-banner);
   background-size: cover;
   background-position: center;
-  opacity: 0.50; 
+  opacity: 0.50;
   z-index: 1;
 }
 
@@ -31,7 +31,30 @@
 }
 
 .perfil-header h1 { margin: 0 0 5px 0; font-size: 26px; color: #ffffff; }
-.perfil-header p { margin: 0; font-size: 15px; color: rgba(255, 255, 255, 0.9); }
+.perfil-header p  { margin: 0; font-size: 15px; color: rgba(255, 255, 255, 0.9); }
+
+.alert-message {
+  padding: 14px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+.alert-message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 4px solid #28a745;
+}
+
+.alert-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-left: 4px solid #e74c3c;
+}
 
 .perfil-layout {
   display: flex;
@@ -67,7 +90,7 @@
   align-items: center;
   font-size: 40px;
   font-weight: 700;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .status-dot {
@@ -76,16 +99,14 @@
   right: 5px;
   width: 18px;
   height: 18px;
-  background-color: #2ecc71; /* Verde ativo */
+  background-color: #2ecc71;
   border: 3px solid #ffffff;
   border-radius: 50%;
 }
 
-.perfil-nome {
-  margin: 0 0 5px 0;
-  font-size: 22px;
-  color: var(--color-dark);
-}
+.status-dot.inativo { background-color: #e74c3c; }
+
+.perfil-nome  { margin: 0 0 5px 0; font-size: 22px; color: var(--color-dark); }
 
 .perfil-cargo {
   font-size: 14px;
@@ -106,11 +127,7 @@
   padding-top: 20px;
 }
 
-.info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
+.info-item  { display: flex; flex-direction: column; gap: 3px; }
 
 .info-label {
   font-size: 12px;
@@ -119,11 +136,7 @@
   font-weight: 700;
 }
 
-.info-value {
-  font-size: 14px;
-  color: #444;
-  font-weight: 500;
-}
+.info-value { font-size: 14px; color: #444; font-weight: 500; }
 
 .status-text { color: #2ecc71; font-weight: 700; }
 
@@ -152,6 +165,7 @@
   cursor: pointer;
   border-bottom: 3px solid transparent;
   transition: all 0.2s;
+  font-family: inherit;
 }
 
 .tab-btn:hover { color: var(--color-primary); }
@@ -162,12 +176,10 @@
   background-color: #ffffff;
 }
 
-.tab-content {
-  padding: 30px;
-}
+.tab-content { padding: 30px; }
 
-.tab-content h3 { margin: 0 0 5px 0; font-size: 20px; color: var(--color-dark); }
-.tab-description { margin: 0 0 25px 0; font-size: 14px; color: #777; }
+.tab-content h3   { margin: 0 0 5px 0; font-size: 20px; color: var(--color-dark); }
+.tab-description  { margin: 0 0 25px 0; font-size: 14px; color: #777; }
 
 .perfil-form {
   display: flex;
@@ -177,19 +189,11 @@
 }
 
 .max-w-400 { max-width: 400px; }
-.mt-15 { margin-top: 15px; }
+.mt-15     { margin-top: 15px; }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.form-group { display: flex; flex-direction: column; gap: 8px; }
 
-.form-group label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #555;
-}
+.form-group label { font-size: 13px; font-weight: 600; color: #555; }
 
 .form-group input {
   padding: 12px 15px;
@@ -198,9 +202,41 @@
   font-size: 14px;
   color: #444;
   outline: none;
+  font-family: inherit;
   transition: border-color 0.2s;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .form-group input:focus { border-color: var(--color-primary); }
+
+.custom-table { width: 100%; border-collapse: collapse; }
+
+.custom-table th,
+.custom-table td {
+  padding: 13px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.custom-table thead th {
+  font-weight: 700;
+  font-size: 13px;
+  color: #555;
+  background-color: #fafafa;
+}
+
+.custom-table.zebrada tbody tr:nth-child(even) { background-color: #f9f9f9; }
+.custom-table.zebrada tbody tr:hover           { background-color: #f0f7ff; transition: background 0.15s; }
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  font-size: 16px;
+  color: #888;
+}
 
 .animate-fade { animation: fadeIn 0.3s ease-in-out; }
