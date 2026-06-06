@@ -216,7 +216,7 @@ function Aquisicoes() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>Comprado a partir de:</span>
             <input
-                type="date"
+                type="datetime-local"
                 value={filterDataInicio}
                 onChange={e => setFilterDataInicio(e.target.value)}
                 className="filter-select"
@@ -224,7 +224,7 @@ function Aquisicoes() {
             />
             <span style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>Até:</span>
             <input
-                type="date"
+                type="datetime-local"
                 value={filterDataFim}
                 onChange={e => setFilterDataFim(e.target.value)}
                 className="filter-select"
@@ -308,7 +308,7 @@ function Aquisicoes() {
                   <div className="form-group">
                     <label>Data da Compra</label>
                     <input
-                        type="date"
+                        type="datetime-local"
                         value={formData.dataCompra}
                         onChange={e => setFormData({...formData, dataCompra: e.target.value})}
                         required

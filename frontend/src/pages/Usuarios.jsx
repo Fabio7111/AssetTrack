@@ -198,7 +198,6 @@ function Usuarios() {
         </div>
 
         <section className="table-section">
-          {/* Adicionado o cabeçalho com o botão de exportar */}
           <div className="table-header">
             <h2>Gerenciamento de Usuários</h2>
             <button className="btn-secondary" onClick={exportToExcel}>Exportar para Excel</button>

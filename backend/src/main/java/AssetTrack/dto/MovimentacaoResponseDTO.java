@@ -11,17 +11,23 @@ public record MovimentacaoResponseDTO(
         String setorDestino,
         String responsavel,
         LocalDateTime dataMovimentacao,
-        String observacao
+        LocalDateTime dataInicio,
+        LocalDateTime dataConclusao,
+        String observacao,
+        String status
 ) {
     public MovimentacaoResponseDTO(Movimentacao m) {
         this(
                 m.getIdMovimentacao(),
-                m.getEquipamento().getNomeEquipamento(),
-                m.getSetorOrigem() != null ? m.getSetorOrigem().getNomeSetor() : "Sem Setor",
-                m.getSetorDestino().getNomeSetor(),
-                m.getResponsavel().getNome(),
+                m.getEquipamento() != null ? m.getEquipamento().getNomeEquipamento() : "Desconhecido",
+                m.getSetorOrigem() != null ? m.getSetorOrigem().getNomeSetor() : "Estoque",
+                m.getSetorDestino() != null ? m.getSetorDestino().getNomeSetor() : "Sem Setor",
+                m.getResponsavel() != null ? m.getResponsavel().getNome() : "Não informado",
                 m.getDataMovimentacao(),
-                m.getObservacao()
+                m.getDataInicio(),
+                m.getDataConclusao(),
+                m.getObservacao(),
+                m.getStatus()
         );
     }
 }

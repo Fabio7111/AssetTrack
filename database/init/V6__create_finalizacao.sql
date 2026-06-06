@@ -61,3 +61,13 @@ INSERT INTO setor (id_setor, nome_setor, localizacao_fisica) VALUES
     (gen_random_uuid(), 'NAAS', 'Faturamento');
 
 ALTER TABLE manutencao ADD COLUMN status VARCHAR(30) DEFAULT 'ATIVA';
+
+ALTER TABLE movimentacao ADD COLUMN data_inicio TIMESTAMP;
+ALTER TABLE movimentacao ADD COLUMN data_conclusao TIMESTAMP;
+
+ALTER TABLE movimentacao
+    ADD COLUMN status VARCHAR(50) DEFAULT 'AGENDADO' NOT NULL;
+
+UPDATE movimentacao
+SET status = 'AGENDADO'
+WHERE status IS NULL;

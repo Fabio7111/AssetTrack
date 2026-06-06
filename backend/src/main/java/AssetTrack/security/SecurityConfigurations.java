@@ -41,6 +41,14 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.GET, "/usuarios/verificar-email").permitAll()
                         .requestMatchers("/perfis", "/perfis/**").permitAll()
 
+                        .requestMatchers(HttpMethod.POST, "/movimentacoes/transferir").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/movimentacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/movimentacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/movimentacoes/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/equipamentos/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/usuarios/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/setores/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

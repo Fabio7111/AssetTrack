@@ -10,6 +10,7 @@ public record EquipamentoResponseDTO(
         String numeroSerie,
         String statusAtual,
         LocalDateTime dataCadastro,
+        UUID idSetor,
         String nomeSetor,
         UUID idAquisicao
 ) {
@@ -20,8 +21,9 @@ public record EquipamentoResponseDTO(
                 eq.getNumeroSerie(),
                 eq.getStatusAtual(),
                 eq.getDataCadastro(),
+                eq.getSetor() != null ? eq.getSetor().getIdSetor() : null,
                 eq.getSetor() != null ? eq.getSetor().getNomeSetor() : "Sem Setor",
-                eq.getAquisicao() != null ? eq.getAquisicao().getIdAquisicao() : null // <-- MAPEAR AQUI
+                eq.getAquisicao() != null ? eq.getAquisicao().getIdAquisicao() : null
         );
     }
 }

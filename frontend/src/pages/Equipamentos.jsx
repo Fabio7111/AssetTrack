@@ -273,7 +273,7 @@ function Equipamentos() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>De:</span>
             <input
-                type="date"
+                type="datetime-local"
                 value={filterDataInicio}
                 onChange={e => setFilterDataInicio(e.target.value)}
                 className="filter-select"
@@ -281,7 +281,7 @@ function Equipamentos() {
             />
             <span style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>Até:</span>
             <input
-                type="date"
+                type="datetime-local"
                 value={filterDataFim}
                 onChange={e => setFilterDataFim(e.target.value)}
                 className="filter-select"

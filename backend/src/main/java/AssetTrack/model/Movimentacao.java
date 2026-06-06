@@ -18,6 +18,14 @@ public class Movimentacao {
     @Column(name = "data_movimentacao", nullable = false)
     private LocalDateTime dataMovimentacao;
 
+    private String status;
+
+    @Column(name = "data_inicio")
+    private LocalDateTime dataInicio;
+
+    @Column(name = "data_conclusao")
+    private LocalDateTime dataConclusao;
+
     @Column(length = 255)
     private String observacao;
 
@@ -26,7 +34,7 @@ public class Movimentacao {
     private Equipamento equipamento;
 
     @ManyToOne
-    @JoinColumn(name = "id_setor_origem", nullable = false)
+    @JoinColumn(name = "id_setor_origem", nullable = true)
     private Setor setorOrigem;
 
     @ManyToOne
@@ -34,6 +42,6 @@ public class Movimentacao {
     private Setor setorDestino;
 
     @ManyToOne
-    @JoinColumn(name = "id_usuario_responsavel", nullable = false)
+    @JoinColumn(name = "id_usuario_responsavel", nullable = true)
     private Usuario responsavel;
 }
