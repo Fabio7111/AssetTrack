@@ -99,3 +99,30 @@ VALUES (
    true,
    true
        );
+
+ALTER TABLE item_estoque
+    ADD COLUMN IF NOT EXISTS localizacao    VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS status         VARCHAR(30) NOT NULL DEFAULT 'DISPONIVEL',
+    ADD COLUMN IF NOT EXISTS imagem_base64  TEXT;
+
+CREATE TABLE unidade_estoque (
+    id_unidade      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_item         UUID NOT NULL REFERENCES item_estoque(id_item) ON DELETE CASCADE,
+    patrimonio      VARCHAR(100),
+    estado          VARCHAR(30) NOT NULL DEFAULT 'DISPONIVEL',
+    observacao      TEXT,
+    id_setor        UUID REFERENCES setor(id_setor),
+    id_usuario      UUID REFERENCES usuario(id)
+);
+
+CREATE TABLE movimentacao_estoque (
+    id_movimentacao UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_item         UUID NOT NULL REFERENCES item_estoque(id_item),
+    id_unidade      UUID REFERENCES unidade_estoque(id_unidade),
+    tipo            VARCHAR(10) NOT NULL, -- ENTRADA | SAIDA
+    quantidade      INT NOT NULL DEFAULT 1,
+    id_usuario      UUID REFERENCES usuario(id),
+    id_setor        UUID REFERENCES setor(id_setor),
+    observacao      TEXT,
+    data_hora       TIMESTAMP NOT NULL DEFAULT NOW()
+);

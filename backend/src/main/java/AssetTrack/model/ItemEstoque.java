@@ -23,4 +23,13 @@ public class ItemEstoque {
 
     @Column(name = "quantidade_disponivel", nullable = false)
     private Integer quantidadeDisponivel = 0;
+
+    @Column(length = 100)
+    private String localizacao;
+
+    @Column(length = 30, nullable = false)
+    private String status = "DISPONIVEL";
+
+    @Column(name = "imagem_base64", columnDefinition = "TEXT")
+    private String imagemBase64;
 }
