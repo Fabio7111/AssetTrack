@@ -34,41 +34,127 @@ public class SecurityConfigurations {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Autenticação
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/solicitar-acesso").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/recuperar-senha").permitAll()
-                        .requestMatchers(HttpMethod.GET,  "/usuarios/verificar-email").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/usuarios/verificar-email").permitAll()
+
+                        // Perfis
                         .requestMatchers("/perfis", "/perfis/**").permitAll()
 
+                        // Perfil próprio
                         .requestMatchers(HttpMethod.GET, "/usuarios/me").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/usuarios/me").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/usuarios/me/senha").authenticated()
 
+                        // Logs próprios
                         .requestMatchers(HttpMethod.GET, "/log-acessos/me").authenticated()
 
-                        .requestMatchers(HttpMethod.PUT, "/solicitacoes/manutencao/*/status").hasAnyRole("MODERADOR", "ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.PUT, "/solicitacoes/estoque/*/status").hasAnyRole("MODERADOR", "ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.POST, "/solicitacoes/manutencao").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/solicitacoes/estoque").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/solicitacoes/avaliar").authenticated()
-                        .requestMatchers(HttpMethod.GET,  "/solicitacoes/**").authenticated()
+                        // ==========================
+                                // ==========================
+                        // USUÁRIOS
+                        // ==========================
 
-                        .requestMatchers(HttpMethod.POST,   "/estoque/movimentacoes").hasAnyRole("MODERADOR", "ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.POST,   "/estoque/**").hasAnyRole("MODERADOR", "ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.PUT,    "/estoque/**").hasAnyRole("MODERADOR", "ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.DELETE, "/estoque/**").hasAnyRole("MODERADOR", "ADMINISTRADOR")
-                        .requestMatchers(HttpMethod.GET,    "/estoque/**").authenticated()
+                        // Listar usuários (necessário para Movimentação e Manutenção)
 
-                        .requestMatchers(HttpMethod.POST,   "/movimentacoes/transferir").authenticated()
-                        .requestMatchers(HttpMethod.PUT,    "/movimentacoes/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/movimentacoes/**").authenticated()
-                        .requestMatchers(HttpMethod.GET,    "/movimentacoes/**").authenticated()
-                        .requestMatchers(HttpMethod.GET,    "/equipamentos/**").authenticated()
-                        .requestMatchers(HttpMethod.GET,    "/usuarios/**").authenticated()
-                        .requestMatchers(HttpMethod.GET,    "/setores/**").authenticated()
-                        .requestMatchers(HttpMethod.GET,    "/configuracoes").authenticated()
-                        .requestMatchers(HttpMethod.PUT,    "/configuracoes").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET, "/usuarios")
+                        .hasAnyRole("ADMINISTRADOR", "MODERADOR")
+
+                        // CRUD somente ADMIN
+                        .requestMatchers(HttpMethod.POST, "/usuarios")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/**")
+                        .hasRole("ADMINISTRADOR")
+
+                        .requestMatchers(HttpMethod.DELETE, "/usuarios/**")
+                                .hasRole("ADMINISTRADOR")
+
+                        // Demais endpoints de usuários
+
+                        .requestMatchers("/usuarios/**")
+                            .hasRole("ADMINISTRADOR")
+
+                        // ==========================
+                        // AUDITORIA (Somente ADMIN)
+                        // ==========================
+                        .requestMatchers("/auditorias/**")
+                        .hasRole("ADMINISTRADOR")
+
+                                // ==========================
+                                // EQUIPAMENTOS
+                                // ==========================
+
+                                // CONSULTA -> TODOS
+                                .requestMatchers(HttpMethod.GET, "/equipamentos/**")
+                                .hasAnyRole("ADMINISTRADOR", "MODERADOR", "USUARIO")
+
+                                // ALTERAÇÃO -> ADMIN + MODERADOR
+                                .requestMatchers(HttpMethod.POST, "/equipamentos/**")
+                                .hasAnyRole("ADMINISTRADOR", "MODERADOR")
+
+                                .requestMatchers(HttpMethod.PUT, "/equipamentos/**")
+                                .hasAnyRole("ADMINISTRADOR", "MODERADOR")
+
+                                .requestMatchers(HttpMethod.DELETE, "/equipamentos/**")
+                                .hasAnyRole("ADMINISTRADOR", "MODERADOR")
+
+                                // ==========================
+                                // SETORES
+                                // ==========================
+
+                                // CONSULTA -> TODOS
+                                .requestMatchers(HttpMethod.GET, "/setores/**")
+                                .hasAnyRole("ADMINISTRADOR", "MODERADOR", "USUARIO")
+
+                                // ALTERAÇÃO -> ADMIN + MODERADOR
+                                .requestMatchers(HttpMethod.POST, "/setores/**")
+                                .hasAnyRole("ADMINISTRADOR", "MODERADOR")
+
+                                .requestMatchers(HttpMethod.PUT, "/setores/**")
+                                .hasAnyRole("ADMINISTRADOR", "MODERADOR")
+
+                                .requestMatchers(HttpMethod.DELETE, "/setores/**")
+                                .hasAnyRole("ADMINISTRADOR", "MODERADOR")
+
+                        // ==========================
+                        // MOVIMENTAÇÕES
+                        // ADMIN + MODERADOR
+                        // ==========================
+                        .requestMatchers("/movimentacoes/**")
+                        .hasAnyRole("ADMINISTRADOR", "MODERADOR")
+
+                        // ==========================
+                        // ESTOQUE
+                        // ADMIN + MODERADOR
+                        // ==========================
+                        .requestMatchers("/estoque/**")
+                        .hasAnyRole("ADMINISTRADOR", "MODERADOR")
+
+                        // ==========================
+                        // SOLICITAÇÕES
+                        // TODOS
+                        // ==========================
+                        .requestMatchers("/solicitacoes/**")
+                        .hasAnyRole(
+                                "ADMINISTRADOR",
+                                "MODERADOR",
+                                "USUARIO"
+                        )
+
+                        // ==========================
+                        // CONFIGURAÇÕES
+                        // TODOS
+                        // ==========================
+                        .requestMatchers(HttpMethod.GET, "/configuracoes")
+                        .authenticated()
+
+                        .requestMatchers(HttpMethod.PUT, "/configuracoes")
+                        .authenticated()
 
                         .anyRequest().authenticated()
                 )

@@ -58,8 +58,12 @@ function Login() {
           email: formData.email,
           senha: formData.password
         });
-        localStorage.setItem('token', response.data.token);
-        navigate('/');
+       localStorage.setItem('token', response.data.token);
+       localStorage.setItem('perfil', response.data.perfil);
+       localStorage.setItem('nome', response.data.nome);
+       localStorage.setItem('email', response.data.email);
+
+       navigate('/');
       }
 
       else if (view === 'cadastro') {

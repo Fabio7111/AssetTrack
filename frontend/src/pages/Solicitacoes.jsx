@@ -58,38 +58,59 @@ function Solicitacoes() {
   useEffect(() => { carregarTudo(); }, []);
 
   const carregarTudo = async () => {
-    setLoading(true);
+  setLoading(true);
+
+  try {
+    const resMe = await api.get('/usuarios/me');
+    const me = resMe.data;
+
+    setUsuario(me);
+
+    const gestor = ['MODERADOR', 'ADMINISTRADOR'].includes(
+      (me.nomePerfil || '').toUpperCase()
+    );
+
+    const rotaMan = gestor
+      ? '/solicitacoes/manutencao'
+      : '/solicitacoes/manutencao/minhas';
+
+    const rotaEst = gestor
+      ? '/solicitacoes/estoque'
+      : '/solicitacoes/estoque/minhas';
+
+    const [resMan, resEst] = await Promise.all([
+      api.get(rotaMan),
+      api.get(rotaEst)
+    ]);
+
+    setSolManutencao(resMan.data || []);
+    setSolEstoque(resEst.data || []);
+
     try {
-      const resMe = await api.get('/usuarios/me');
-      const me = resMe.data;
-      setUsuario(me);
-
-      const gestor = ['MODERADOR', 'ADMINISTRADOR'].includes(
-          (me.nomePerfil || '').toUpperCase()
-      );
-
-      const rotaMan = gestor ? '/solicitacoes/manutencao' : '/solicitacoes/manutencao/minhas';
-      const rotaEst = gestor ? '/solicitacoes/estoque'    : '/solicitacoes/estoque/minhas';
-
-      const [resMan, resEst, resEq, resItens] = await Promise.all([
-        api.get(rotaMan),
-        api.get(rotaEst),
-        api.get('/equipamentos'),
-        api.get('/estoque'),
-      ]);
-      setSolManutencao(resMan.data);
-      setSolEstoque(resEst.data);
-      setEquipamentos(resEq.data);
-      setItens(resItens.data);
+      const resEq = await api.get('/equipamentos');
+      setEquipamentos(resEq.data || []);
     } catch (error) {
-      console.error('Erro ao carregar solicitações:', error);
-      showMessage('Erro ao carregar dados.', 'error');
-    } finally {
-      setLoading(false);
+      console.error('Erro ao carregar equipamentos:', error);
+      setEquipamentos([]);
     }
-  };
 
-  const formatarData = (d) => d ? new Date(d).toLocaleString('pt-BR', {
+    try {
+      const resItens = await api.get('/estoque');
+      setItens(resItens.data || []);
+    } catch (error) {
+      console.error('Erro ao carregar estoque:', error);
+      setItens([]);
+    }
+
+  } catch (error) {
+    console.error('Erro ao carregar solicitações:', error);
+    showMessage('Erro ao carregar dados.', 'error');
+  } finally {
+    setLoading(false);
+  }
+};
+
+const formatarData = (d) => d ? new Date(d).toLocaleString('pt-BR', {
     day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
   }) : '—';
 

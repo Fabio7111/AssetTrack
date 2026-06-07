@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import './Sidebar.css';
 
-import logoAssetTrack from '../assets/logo-assettrack.png'; 
+import logoAssetTrack from '../assets/logo-assettrack.png';
 import logoUnimed from '../assets/logo-unimed.png';
 import marcaAssetTrack from '../assets/marca.png';
 
@@ -19,74 +19,120 @@ import iconConfig from '../assets/Config Icon.png';
 import iconSetas from '../assets/Setas Sidebar.png';
 
 function Sidebar({ isOpen, toggleSidebar }) {
+
+  const perfil = localStorage.getItem('perfil');
+
   return (
     <nav className={`sidebar ${isOpen ? 'expanded' : 'collapsed'}`}>
-      
+
       <div className="sidebar-header">
         <Link to="/" className="logo-link" title="Ir para o Dashboard">
           {isOpen ? (
-            <img src={logoAssetTrack} alt="AssetTrack Logo" className="logo-top" />
+            <img
+              src={logoAssetTrack}
+              alt="AssetTrack Logo"
+              className="logo-top"
+            />
           ) : (
-            <img src={marcaAssetTrack} alt="Marca AssetTrack" className="logo-short-img" />
+            <img
+              src={marcaAssetTrack}
+              alt="Marca AssetTrack"
+              className="logo-short-img"
+            />
           )}
         </Link>
       </div>
 
       <div className="nav-menu">
-        <NavLink to="/usuarios" className="nav-link">
-          <img src={iconUsu} alt="Usuários" className="menu-icon" /> <span className="link-text">Usuários</span>
-        </NavLink>
-        
-        <NavLink to="/equipamentos" className="nav-link">
-          <img src={iconEquip} alt="Equipamentos" className="menu-icon" /> <span className="link-text">Equipamentos</span>
-        </NavLink>
-        
-        <NavLink to="/aquisicao" className="nav-link">
-          <img src={iconAqus} alt="Aquisição" className="menu-icon" /> <span className="link-text">Aquisição</span>
-        </NavLink>
-        
-        <NavLink to="/manutencao" className="nav-link">
-          <img src={iconManut} alt="Manutenção" className="menu-icon" /> <span className="link-text">Manutenção</span>
-        </NavLink>
-        
-        <NavLink to="/movimentacao" className="nav-link">
-          <img src={iconMovim} alt="Movimentação" className="menu-icon" /> <span className="link-text">Movimentação</span>
-        </NavLink>
-        
-        <NavLink to="/estoque" className="nav-link">
-          <img src={iconEstoque} alt="Estoque" className="menu-icon" /> <span className="link-text">Estoque</span>
-        </NavLink>
+
+        {perfil === "ADMINISTRADOR" && (
+          <NavLink to="/usuarios" className="nav-link">
+            <img src={iconUsu} alt="Usuários" className="menu-icon" />
+            <span className="link-text">Usuários</span>
+          </NavLink>
+        )}
+
+        {["ADMINISTRADOR", "MODERADOR"].includes(perfil) && (
+          <>
+            <NavLink to="/equipamentos" className="nav-link">
+              <img src={iconEquip} alt="Equipamentos" className="menu-icon" />
+              <span className="link-text">Equipamentos</span>
+            </NavLink>
+
+            <NavLink to="/aquisicao" className="nav-link">
+              <img src={iconAqus} alt="Aquisição" className="menu-icon" />
+              <span className="link-text">Aquisição</span>
+            </NavLink>
+
+            <NavLink to="/manutencao" className="nav-link">
+              <img src={iconManut} alt="Manutenção" className="menu-icon" />
+              <span className="link-text">Manutenção</span>
+            </NavLink>
+
+            <NavLink to="/movimentacao" className="nav-link">
+              <img src={iconMovim} alt="Movimentação" className="menu-icon" />
+              <span className="link-text">Movimentação</span>
+            </NavLink>
+
+            <NavLink to="/estoque" className="nav-link">
+              <img src={iconEstoque} alt="Estoque" className="menu-icon" />
+              <span className="link-text">Estoque</span>
+            </NavLink>
+
+            <NavLink to="/relatorios" className="nav-link">
+              <img src={iconRelat} alt="Relatórios" className="menu-icon" />
+              <span className="link-text">Relatórios</span>
+            </NavLink>
+          </>
+        )}
 
         <NavLink to="/solicitacoes" className="nav-link">
-          <img src={iconInv} alt="Solicitações" className="menu-icon" /> <span className="link-text">Solicitações</span>
+          <img src={iconInv} alt="Solicitações" className="menu-icon" />
+          <span className="link-text">Solicitações</span>
         </NavLink>
-        
-        <NavLink to="/auditoria" className="nav-link">
-          <img src={iconAudit} alt="Auditoria" className="menu-icon" /> <span className="link-text">Auditoria</span>
-        </NavLink>
-        
-        <NavLink to="/relatorios" className="nav-link">
-          <img src={iconRelat} alt="Relatórios" className="menu-icon" /> <span className="link-text">Relatórios</span>
-        </NavLink>
+
+        {perfil === "ADMINISTRADOR" && (
+          <NavLink to="/auditoria" className="nav-link">
+            <img src={iconAudit} alt="Auditoria" className="menu-icon" />
+            <span className="link-text">Auditoria</span>
+          </NavLink>
+        )}
+
       </div>
 
       <div className="sidebar-footer">
         {isOpen && (
           <div className="unimed-container">
-            <img src={logoUnimed} alt="Unimed Assis" className="logo-bottom" />
+            <img
+              src={logoUnimed}
+              alt="Unimed Assis"
+              className="logo-bottom"
+            />
           </div>
         )}
-        
+
         <div className="footer-actions">
-          <NavLink to="/configuracoes" className="settings-btn" title="Configurações">
-            <img src={iconConfig} alt="Configurações" className="menu-icon" />
+          <NavLink
+            to="/configuracoes"
+            className="settings-btn"
+            title="Configurações"
+          >
+            <img
+              src={iconConfig}
+              alt="Configurações"
+              className="menu-icon"
+            />
           </NavLink>
 
-          <button className="toggle-btn" onClick={toggleSidebar} title={isOpen ? "Recolher Menu" : "Expandir Menu"}>
-            <img 
-              src={iconSetas} 
-              alt="Alternar Menu" 
-              className={`arrow-icon ${!isOpen ? 'flipped' : ''}`} 
+          <button
+            className="toggle-btn"
+            onClick={toggleSidebar}
+            title={isOpen ? "Recolher Menu" : "Expandir Menu"}
+          >
+            <img
+              src={iconSetas}
+              alt="Alternar Menu"
+              className={`arrow-icon ${!isOpen ? 'flipped' : ''}`}
             />
           </button>
         </div>
