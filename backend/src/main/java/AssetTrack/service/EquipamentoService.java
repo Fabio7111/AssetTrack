@@ -106,4 +106,28 @@ public class EquipamentoService {
         equipamento.setStatusAtual("INATIVO");
         equipamentoRepository.save(equipamento);
     }
+    public List<EquipamentoResponseDTO> listarComFiltros(
+            String status,
+            String setor
+    ) {
+
+        return equipamentoRepository.findAll()
+                .stream()
+                .filter(e ->
+                        status == null ||
+                                status.isBlank() ||
+                                e.getStatusAtual().equalsIgnoreCase(status)
+                )
+                .filter(e ->
+                        setor == null ||
+                                setor.isBlank() ||
+                                (
+                                        e.getSetor() != null &&
+                                                e.getSetor().getNomeSetor().equalsIgnoreCase(setor)
+                                )
+                )
+                .map(EquipamentoResponseDTO::new)
+                .toList();
+
+    }
 }
