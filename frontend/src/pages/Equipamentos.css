@@ -288,3 +288,10 @@
   color: #d35400;
   border: 1px solid rgba(241, 196, 15, 0.3);
 }
+
+.equipamentos-container .custom-table th:nth-child(1) { width: 40%; }
+.equipamentos-container .custom-table th:nth-child(2) { width: 15%; }
+.equipamentos-container .custom-table th:nth-child(3) { width: 10%; }
+.equipamentos-container .custom-table th:nth-child(4) { width: 15%; }
+.equipamentos-container .custom-table th:nth-child(5) { width: 20%; }
+.equipamentos-container .custom-table th:nth-child(6) { width: 10%; }

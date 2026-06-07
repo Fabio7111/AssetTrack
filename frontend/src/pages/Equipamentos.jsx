@@ -11,6 +11,9 @@ function Equipamentos() {
   const [equipments, setEquipments] = useState([]);
   const [setores, setSetores] = useState([]);
   const [aquisicoes, setAquisicoes] = useState([]);
+  const [termosDoEquipamento, setTermosDoEquipamento] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
+  const [idUsuarioTermo, setIdUsuarioTermo] = useState('');
   const [loading, setLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,6 +42,7 @@ function Equipamentos() {
     fetchEquipments();
     fetchSetores();
     fetchAquisicoes();
+    fetchUsuarios();
   }, []);
 
   const fetchEquipments = async () => {
@@ -71,12 +75,30 @@ function Equipamentos() {
     }
   };
 
+  const fetchUsuarios = async () => {
+    try {
+      const response = await api.get('/usuarios');
+
+      const usuariosAtivos = response.data.filter(u =>
+          u.status === 'ATIVO' || u.status === true || u.statusAtual === 'ATIVO'
+      );
+
+      setUsuarios(usuariosAtivos);
+    } catch (error) {
+      console.error("Erro ao buscar usuários:", error);
+    }
+  };
+
   const filteredEquipments = equipments.filter(eq => {
     const matchesSearch = eq.nomeEquipamento.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (eq.numeroSerie && eq.numeroSerie.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesSetor = filterSetor ? eq.nomeSetor === filterSetor : true;
-    const matchesStatus = filterStatus ? eq.statusAtual === filterStatus : true;
+
+    const normalizedEqStatus = eq.statusAtual
+        ? eq.statusAtual.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_')
+        : '';
+    const matchesStatus = filterStatus ? normalizedEqStatus === filterStatus : true;
 
     let matchesData = true;
     if (filterDataInicio || filterDataFim) {
@@ -195,9 +217,65 @@ function Equipamentos() {
     }
   };
 
-  // --- NOVA LÓGICA DE STATUS AQUI ---
+  const handleOpenViewModal = async (eq) => {
+    setSelectedEq(eq);
+    setIdUsuarioTermo('');
+    setViewModalOpen(true);
+    try {
+      const response = await api.get(`/termos/equipamento/${eq.idEquipamento}`);
+      setTermosDoEquipamento(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar histórico de termos:", error);
+      setTermosDoEquipamento([]);
+    }
+  };
+
+  const handleEmitirTermo = async (e) => {
+    e.preventDefault();
+    if (!idUsuarioTermo) return alert("Selecione um usuário para receber o ativo.");
+
+    try {
+      const payload = {
+        idEquipamento: selectedEq.idEquipamento,
+        idUsuario: idUsuarioTermo
+      };
+
+      await api.post('/termos', payload);
+      alert("Termo de Responsabilidade emitido com sucesso!");
+      setIdUsuarioTermo('');
+
+      const response = await api.get(`/termos/equipamento/${selectedEq.idEquipamento}`);
+      setTermosDoEquipamento(response.data);
+    } catch (error) {
+      alert("Erro ao emitir termo: " + (error.response?.data?.message || "Verifique as dependências."));
+    }
+  };
+
+  const handleBaixarPdf = async (idTermo) => {
+    try {
+      const response = await api.get(`/termos/${idTermo}/pdf`, {
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Termo_Responsabilidade_${idTermo.substring(0,8)}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      alert("Erro ao efetuar o download do PDF.");
+    }
+  };
+
   const getStatusInfo = (status) => {
-    switch (status) {
+    const normalizedStatus = status
+        ? status.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '_')
+        : '';
+
+    switch (normalizedStatus) {
       case 'ATIVO':
         return { label: 'Ativo', className: 'ativo' };
       case 'INATIVO':
@@ -205,7 +283,7 @@ function Equipamentos() {
       case 'EM_MANUTENCAO':
         return { label: 'Em Manutenção', className: 'em-manutencao' };
       default:
-        return { label: status, className: status?.toLowerCase().replace(/_/g, '-') };
+        return { label: status, className: status?.toLowerCase().replace(/_/g, '-').replace(/\s+/g, '-') };
     }
   };
 
@@ -331,14 +409,13 @@ function Equipamentos() {
                         <td>{eq.nomeSetor}</td>
                         <td>{new Date(eq.dataCadastro).toLocaleDateString('pt-BR')}</td>
                         <td>
-                          {/* APLICAÇÃO DA NOVA LÓGICA AQUI */}
                           <span className={`status-badge ${getStatusInfo(eq.statusAtual).className}`}>
                             {getStatusInfo(eq.statusAtual).label}
                           </span>
                         </td>
                         <td>
                           <div className="action-buttons">
-                            <button className="btn-icon" onClick={() => openViewModal(eq)} title="Detalhes">
+                            <button className="btn-icon" onClick={() => handleOpenViewModal(eq)} title="Detalhes">
                               <img src={detalhesIcon} alt="Detalhes" className="action-icon" />
                             </button>
                             <button className="btn-icon" onClick={() => handleOpenModal(eq)} title="Editar">
@@ -428,52 +505,129 @@ function Equipamentos() {
 
         {viewModalOpen && selectedEq && (
             <div className="modal-overlay">
-              <div className="modal-content">
+              <div className="modal-content" style={{ maxWidth: '750px', width: '90%' }}>
                 <div className="modal-header">
-                  <h2>Detalhes do Ativo</h2>
+                  <h2>Detalhes e Documentação do Ativo</h2>
                   <button className="btn-close" onClick={() => setViewModalOpen(false)}>&times;</button>
                 </div>
-                <div className="modal-form">
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>ID do Equipamento</label>
-                      <input type="text" value={selectedEq.idEquipamento} disabled />
+
+                <div className="modal-body-scroll" style={{ maxHeight: '70vh', overflowY: 'auto', paddingRight: '5px' }}>
+                  <div className="modal-form">
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>ID do Equipamento</label>
+                        <input type="text" value={selectedEq.idEquipamento} disabled />
+                      </div>
+                      <div className="form-group">
+                        <label>Data de Cadastro</label>
+                        <input type="text" value={new Date(selectedEq.dataCadastro).toLocaleDateString('pt-BR')} disabled />
+                      </div>
                     </div>
+
                     <div className="form-group">
-                      <label>Data de Cadastro</label>
-                      <input type="text" value={new Date(selectedEq.dataCadastro).toLocaleDateString('pt-BR')} disabled />
+                      <label>Nome / Modelo</label>
+                      <input type="text" value={selectedEq.nomeEquipamento} disabled />
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Série / Patrimônio</label>
+                        <input type="text" value={selectedEq.numeroSerie || 'Não Registrado'} disabled />
+                      </div>
+                      <div className="form-group">
+                        <label>Setor Atual</label>
+                        <input type="text" value={selectedEq.nomeSetor} disabled />
+                      </div>
+                    </div>
+
+                    <div className="form-row">
+                      <div className="form-group">
+                        <label>Aquisição Vinculada</label>
+                        <input type="text" value={getAquisicaoText(selectedEq.idAquisicao)} disabled />
+                      </div>
+                      <div className="form-group">
+                        <label>Status</label>
+                        <input type="text" value={getStatusInfo(selectedEq.statusAtual).label} disabled />
+                      </div>
                     </div>
                   </div>
 
-                  <div className="form-group">
-                    <label>Nome / Modelo</label>
-                    <input type="text" value={selectedEq.nomeEquipamento} disabled />
-                  </div>
+                  <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '25px 0' }} />
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Série / Patrimônio</label>
-                      <input type="text" value={selectedEq.numeroSerie || 'Não Registrado'} disabled />
-                    </div>
-                    <div className="form-group">
-                      <label>Setor Atual</label>
-                      <input type="text" value={selectedEq.nomeSetor} disabled />
-                    </div>
-                  </div>
+                  <div className="termo-section">
+                    <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: 'var(--color-dark)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      📋 Histórico e Emissão de Termos de Responsabilidade
+                    </h3>
 
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Aquisição Vinculada</label>
-                      <input type="text" value={getAquisicaoText(selectedEq.idAquisicao)} disabled />
-                    </div>
-                    <div className="form-group">
-                      <label>Status</label>
-                      <input type="text" value={getStatusInfo(selectedEq.statusAtual).label} disabled />
+                    <form onSubmit={handleEmitirTermo} style={{ display: 'flex', gap: '15px', alignItems: 'flex-end', backgroundColor: '#f9f9f9', padding: '15px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #f0f0f0' }}>
+                      <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
+                        <label style={{ fontSize: '12px', fontWeight: '600' }}>Vincular Posse / Emitir Novo Termo para:</label>
+                        <select
+                            value={idUsuarioTermo}
+                            onChange={e => setIdUsuarioTermo(e.target.value)}
+                            style={{ width: '100%', marginTop: '5px', padding: '8px' }}
+                        >
+                          <option value="">Selecione o Colaborador Recebedor</option>
+                          {usuarios.map(u => (
+                              <option key={u.id} value={u.id}>{u.nome} ({u.perfil || 'Usuário'})</option>
+                          ))}
+                        </select>
+                      </div>
+                      <button type="submit" className="btn-primary" style={{ height: '38px', padding: '0 20px', whiteSpace: 'nowrap', fontSize: '13px' }}>
+                        Gerar Termo
+                      </button>
+                    </form>
+
+                    <div className="table-responsive" style={{ boxShadow: 'none', border: '1px solid #eee', borderRadius: '6px' }}>
+                      <table className="custom-table" style={{ fontSize: '13px' }}>
+                        <thead style={{ background: '#f5f5f5' }}>
+                        <tr>
+                          <th style={{ padding: '10px', background: '#7f8c8d', fontSize: '11px' }}>Usuário Responsável</th>
+                          <th style={{ padding: '10px', background: '#7f8c8d', fontSize: '11px' }}>Emissão</th>
+                          <th style={{ padding: '10px', background: '#7f8c8d', fontSize: '11px' }}>Situação</th>
+                          <th style={{ padding: '10px', background: '#7f8c8d', fontSize: '11px' }}>Ação</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {termosDoEquipamento.length > 0 ? (
+                            termosDoEquipamento.map((t) => (
+                                <tr key={t.idTermo}>
+                                  <td style={{ padding: '10px', fontWeight: '500' }}>{t.nomeUsuario}</td>
+                                  <td style={{ padding: '10px' }}>{new Date(t.dataEmissao).toLocaleDateString('pt-BR')}</td>
+                                  <td style={{ padding: '10px' }}>
+                                  <span style={{
+                                    padding: '3px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold',
+                                    backgroundColor: t.statusTermo === 'ATIVO' ? '#e8f8f5' : '#f2f4f4',
+                                    color: t.statusTermo === 'ATIVO' ? '#117a65' : '#7f8c8d'
+                                  }}>
+                                    {t.statusTermo === 'ATIVO' ? 'Vigente / Ativo' : 'Finalizado'}
+                                  </span>
+                                  </td>
+                                  <td style={{ padding: '10px' }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleBaixarPdf(t.idTermo)}
+                                        style={{ background: 'none', border: 'none', color: '#c0392b', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline', fontSize: '12px' }}
+                                    >
+                                      📄 PDF
+                                    </button>
+                                  </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                              <td colSpan="4" style={{ textAlign: 'center', padding: '15px', color: '#999', fontStyle: 'italic' }}>
+                                Nenhuma alocação formal registrada para este ativo.
+                              </td>
+                            </tr>
+                        )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 </div>
 
-                <div className="modal-footer" style={{ marginTop: '20px' }}>
+                <div className="modal-footer" style={{ marginTop: '20px', paddingTop: '15px', borderTop: '1px solid #eee' }}>
                   <button type="button" className="btn-secondary" onClick={() => setViewModalOpen(false)}>Fechar</button>
                 </div>
               </div>
@@ -492,7 +646,6 @@ function Equipamentos() {
                     Tem certeza que deseja inativar o equipamento <strong>{selectedEq.nomeEquipamento}</strong>?
                   </p>
 
-                  {/* Renderização condicional do Erro */}
                   {deleteError && (
                       <div style={{ marginTop: '15px', padding: '12px 15px', backgroundColor: '#fdecea', color: '#c0392b', borderRadius: '6px', fontSize: '14px', borderLeft: '4px solid #e74c3c' }}>
                         <strong>Ação Negada:</strong> {deleteError}

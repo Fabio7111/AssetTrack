@@ -46,7 +46,8 @@ function Manutencoes() {
       setManutencoes(resManu.data);
 
       const equipamentosAtivos = resEq.data.filter(eq =>
-          eq.statusAtual && eq.statusAtual.toUpperCase() === 'ATIVO'
+          eq.statusAtual &&
+          (eq.statusAtual.toUpperCase() === 'ATIVO' || eq.statusAtual.toUpperCase() === 'EM MANUTENCAO')
       );
       setEquipamentos(equipamentosAtivos);
 

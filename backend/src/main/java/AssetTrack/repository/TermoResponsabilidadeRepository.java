@@ -9,4 +9,6 @@ import java.util.UUID;
 @Repository
 public interface TermoResponsabilidadeRepository extends JpaRepository<TermoResponsabilidade, UUID> {
     List<TermoResponsabilidade> findByUsuario_IdAndStatusTermo(UUID idUsuario, String status);
+    List<TermoResponsabilidade> findByEquipamento_IdEquipamentoOrderByDataEmissaoDesc(UUID idEquipamento);
+    List<TermoResponsabilidade> findAllByOrderByDataEmissaoDesc();
 }

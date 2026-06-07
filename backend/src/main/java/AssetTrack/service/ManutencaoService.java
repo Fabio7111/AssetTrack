@@ -76,6 +76,13 @@ public class ManutencaoService {
         manutencao.setDescricaoServico(data.descricaoServico());
         manutencao.setCustoManutencao(data.custoManutencao());
 
+        if (data.dataConclusao() != null) {
+            equipamento.setStatusAtual("ATIVO");
+        } else {
+            equipamento.setStatusAtual("EM MANUTENCAO");
+        }
+        equipamentoRepository.save(equipamento);
+
         manutencaoRepository.save(manutencao);
     }
 
@@ -95,6 +102,15 @@ public class ManutencaoService {
         manutencao.setDescricaoServico(data.descricaoServico());
         manutencao.setCustoManutencao(data.custoManutencao());
 
+        if (!"CANCELADA".equalsIgnoreCase(manutencao.getStatus())) {
+            if (data.dataConclusao() != null) {
+                equipamento.setStatusAtual("ATIVO");
+            } else {
+                equipamento.setStatusAtual("EM MANUTENCAO");
+            }
+            equipamentoRepository.save(equipamento);
+        }
+
         manutencaoRepository.save(manutencao);
     }
 
@@ -104,6 +120,13 @@ public class ManutencaoService {
                 .orElseThrow(() -> new IllegalArgumentException("Manutenção não encontrada."));
 
         manutencao.setStatus("CANCELADA");
+
+        Equipamento eq = manutencao.getEquipamento();
+        if (eq != null && "EM MANUTENCAO".equalsIgnoreCase(eq.getStatusAtual())) {
+            eq.setStatusAtual("ATIVO");
+            equipamentoRepository.save(eq);
+        }
+
         manutencaoRepository.save(manutencao);
     }
 
