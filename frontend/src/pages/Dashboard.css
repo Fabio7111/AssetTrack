@@ -22,10 +22,10 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: var(--bg-banner); 
+  background-image: var(--bg-banner);
   background-size: cover;
   background-position: center;
-  opacity: 0.50; 
+  opacity: 0.50;
   z-index: 1;
 }
 
@@ -82,7 +82,7 @@
 
 .metric-icon {
   font-size: 32px;
-  background-color: var(--color-bg-main);
+  background-color: var(--color-bg-main, rgba(39, 174, 96, 0.1));
   width: 60px;
   height: 60px;
   display: flex;
@@ -103,14 +103,16 @@
   margin: 0;
   font-size: 24px;
   font-weight: 700;
-  color: var(--color-text-main);
+  color: var(--color-text-main, #1a2520);
 }
 
 .metric-card.highlight { border-left-color: var(--color-dark); }
-.metric-card.warning { border-left-color: var(--color-accent); }
-.metric-card.danger { border-left-color: #e74c3c; }
+.metric-card.highlight .metric-icon { background-color: rgba(26, 37, 32, 0.1); }
+.metric-card.warning   { border-left-color: var(--color-accent, #f39c12); }
+.metric-card.warning   .metric-icon { background-color: rgba(243, 156, 18, 0.12); }
+.metric-card.danger    { border-left-color: #e74c3c; }
+.metric-card.danger    .metric-icon { background-color: rgba(231, 76, 60, 0.12); }
 
-/* Seção da Tabela */
 .dashboard-table-section {
   background-color: #ffffff;
   border-radius: 12px;
@@ -131,30 +133,17 @@
   color: var(--color-dark);
 }
 
-.btn-view-all {
-  background-color: transparent;
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.btn-view-all:hover {
-  background-color: var(--color-primary);
-  color: #fff;
-}
-
 .table-responsive {
   overflow-x: auto;
 }
 
 .asset-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   text-align: left;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .asset-table th {
@@ -163,48 +152,35 @@
   color: #ffffff;
   font-size: 13px;
   text-transform: uppercase;
-  border-bottom: none;
+  text-align: center;
 }
-
-.asset-table th:first-child { border-top-left-radius: 8px; }
-.asset-table th:last-child { border-top-right-radius: 8px; }
 
 .asset-table td {
-  padding: 15px;
+  padding: 14px 15px;
   border-bottom: 1px solid #eaebec;
-  color: var(--color-text-main);
+  color: var(--color-text-main, #1a2520);
   font-size: 14px;
+  text-align: center;
 }
 
-.asset-table tbody tr:hover {
-  background-color: #fcfcfc;
-}
+.asset-table tbody tr:nth-child(even) { background-color: rgba(39, 174, 96, 0.04); }
+.asset-table tbody tr:hover { background-color: rgba(39, 174, 96, 0.08); }
 
-.fw-bold {
-  font-weight: 600;
-}
+.fw-bold { font-weight: 700; }
 
 .status-badge {
-  padding: 6px 12px;
+  padding: 5px 12px;
   border-radius: 20px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-.status-badge.atrasada {
-  background-color: var(--color-danger-light);
-  color: #c0392b;
-}
-
-.status-badge.pendente {
-  background-color: var(--color-warning-light);
-  color: #d35400;
-}
-
-.status-badge.agendada {
-  background-color: var(--color-success-light);
-  color: var(--color-dark);
-}
+.status-badge.aberta       { background-color: rgba(52, 152, 219, 0.15); color: #2980b9; }
+.status-badge.pendente     { background-color: rgba(155, 89, 182, 0.15); color: #8e44ad; }
+.status-badge.em-andamento { background-color: rgba(241, 196, 15, 0.18); color: #d35400; }
+.status-badge.concluida    { background-color: rgba(39, 174, 96, 0.15);  color: #1a7a4a; }
+.status-badge.cancelada    { background-color: rgba(231, 76, 60, 0.15);  color: #c0392b; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
