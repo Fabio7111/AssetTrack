@@ -14,11 +14,14 @@ public class AuditoriaItem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID idAuditoriaItem;
 
-    @Column(name = "foi_encontrado", nullable = false)
-    private Boolean foiEncontrado;
+    @Column(name = "quantidade_contada")
+    private Integer quantidadeContada;
 
-    @Column(name = "condicao_equipamento", length = 100)
-    private String condicaoEquipamento;
+    @Column(name = "numero_serie_contado", length = 100)
+    private String numeroSerieContado;
+
+    @Column(name = "foi_encontrado")
+    private Boolean foiEncontrado;
 
     @Column(length = 255)
     private String observacao;
@@ -28,6 +31,10 @@ public class AuditoriaItem {
     private Auditoria auditoria;
 
     @ManyToOne
-    @JoinColumn(name = "id_equipamento", nullable = false)
+    @JoinColumn(name = "id_equipamento")
     private Equipamento equipamento;
+
+    @ManyToOne
+    @JoinColumn(name = "id_item_estoque")
+    private ItemEstoque itemEstoque;
 }

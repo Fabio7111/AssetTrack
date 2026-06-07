@@ -68,6 +68,48 @@
 }
 .usuarios-container .btn-secondary:hover { background-color: #f5f5f5; color: #333; }
 
+.usuarios-container .metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.usuarios-container .metric-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+.usuarios-container .metric-card:hover { transform: translateY(-3px); }
+
+.usuarios-container .metric-icon {
+  font-size: 26px;
+  width: 56px; height: 56px;
+  display: flex; justify-content: center; align-items: center;
+  border-radius: 10px;
+  background-color: rgba(39, 174, 96, 0.1);
+}
+
+.usuarios-container .metric-card.highlight  { border-left: 5px solid var(--color-primary); }
+.usuarios-container .metric-card.highlight  .metric-icon { background-color: rgba(39, 174, 96, 0.12); }
+.usuarios-container .metric-card.success    { border-left: 5px solid #27ae60; }
+.usuarios-container .metric-card.success    .metric-icon { background-color: rgba(39, 174, 96, 0.12); }
+.usuarios-container .metric-card.danger     { border-left: 5px solid #e74c3c; }
+.usuarios-container .metric-card.danger     .metric-icon { background-color: rgba(231, 76, 60, 0.12); }
+.usuarios-container .metric-card.dark-mode  { border-left: 5px solid var(--color-dark); }
+.usuarios-container .metric-card.dark-mode  .metric-icon { background-color: rgba(26, 37, 32, 0.1); }
+
+.usuarios-container .metric-info h3 {
+  margin: 0 0 5px 0; font-size: 13px; color: #666; text-transform: uppercase;
+}
+.usuarios-container .metric-value {
+  margin: 0; font-size: 28px; font-weight: 700; color: var(--color-dark);
+}
+
 .usuarios-container .filters-container {
   display: flex;
   gap: 15px;
@@ -251,6 +293,10 @@
   margin-top: 10px;
 }
 .modal-content > .modal-footer { padding: 0 25px 25px 25px; margin-top: 0; }
+
+@media (max-width: 1100px) {
+  .usuarios-container .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+}
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }

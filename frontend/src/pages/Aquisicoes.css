@@ -5,7 +5,6 @@
   animation: fadeIn 0.4s ease;
 }
 
-/* --- HEADER --- */
 .aquisicoes-header {
   position: relative;
   padding: 30px 40px;
@@ -46,7 +45,6 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* --- BOTÃO (Padrão) --- */
 .aquisicoes-container .btn-primary {
   background-color: var(--color-secondary);
   color: var(--color-dark);
@@ -64,14 +62,81 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* --- MÉTRICAS --- */
+.aquisicoes-container .filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.aquisicoes-container .filter-input-search,
+.aquisicoes-container .filter-select,
+.aquisicoes-container .filters-container input,
+.aquisicoes-container .filters-container select {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #555;
+  background-color: #f9f9f9;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.aquisicoes-container .filter-input-search:focus,
+.aquisicoes-container .filter-select:focus,
+.aquisicoes-container .filters-container input:focus,
+.aquisicoes-container .filters-container select:focus {
+  border-color: var(--color-primary);
+  background-color: #fff;
+}
+
+.aquisicoes-container .filter-input-search { flex: 1; min-width: 240px; }
+
+.aquisicoes-container .filters-container span,
+.aquisicoes-container .filters-container label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
 .aquisicoes-container .metrics-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
+.aquisicoes-container .metric-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+.aquisicoes-container .metric-card:hover { transform: translateY(-3px); }
+.aquisicoes-container .metric-icon {
+  font-size: 28px;
+  width: 58px; height: 58px;
+  display: flex; justify-content: center; align-items: center;
+  border-radius: 10px;
+  background-color: rgba(39, 174, 96, 0.1);
+}
+.aquisicoes-container .metric-card.highlight { border-left: 5px solid var(--color-primary); }
+.aquisicoes-container .metric-card.highlight .metric-icon { background-color: rgba(39, 174, 96, 0.12); }
+.aquisicoes-container .metric-card.dark-mode { border-left: 5px solid var(--color-dark); }
+.aquisicoes-container .metric-card.dark-mode .metric-icon { background-color: rgba(26, 37, 32, 0.1); }
+.aquisicoes-container .metric-info h3 {
+  margin: 0 0 5px 0; font-size: 13px; color: #666; text-transform: uppercase;
+}
+.aquisicoes-container .metric-value { margin: 0; font-size: 28px; font-weight: 700; color: var(--color-dark); }
 
-/* --- TABELA --- */
 .aquisicoes-container .table-section {
   background-color: #ffffff;
   border-radius: 12px;
@@ -121,7 +186,20 @@
 .aquisicoes-container .custom-table tbody tr:nth-child(even) { background-color: rgba(39, 174, 96, 0.04); }
 .aquisicoes-container .custom-table tbody tr:hover           { background-color: rgba(39, 174, 96, 0.08); }
 
-/* --- BADGES DE STATUS --- */
+.aquisicoes-container .fw-bold { font-weight: 700; }
+
+.aquisicoes-container .action-buttons {
+  display: flex; gap: 6px; justify-content: center; align-items: center;
+}
+.aquisicoes-container .btn-icon {
+  width: 28px; height: 28px; padding: 4px;
+  border: none; background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; transition: background 0.2s;
+}
+.aquisicoes-container .btn-icon:hover { background-color: #f0f0f0; }
+.aquisicoes-container .btn-icon img   { width: 22px; height: 22px; object-fit: contain; }
+
 .aquisicoes-container .status-badge {
   padding: 5px 12px;
   border-radius: 20px;
@@ -169,4 +247,9 @@
   gap: 10px;
   margin-top: 20px;
   padding-top: 10px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

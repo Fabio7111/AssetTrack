@@ -137,7 +137,7 @@
   transition: all 0.2s;
 }
 .solic-tab-btn:hover { background: #f5f7fa; color: #333; }
-.solic-tab-btn.active { background-color: var(--color-primary); color: #ffffff; }
+.solic-tab-btn.active { background-color: #b1d34b; color: var(--color-dark); }
 
 .solicitacoes-container .table-section {
   background-color: #ffffff;

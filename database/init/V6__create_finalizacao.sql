@@ -139,3 +139,18 @@ ALTER TABLE avaliacao
     ADD COLUMN IF NOT EXISTS id_solicitacao_estoque    UUID REFERENCES solicitacao_estoque(id_solicitacao_estoque);
 
 ALTER TABLE avaliacao ALTER COLUMN id_manutencao DROP NOT NULL;
+
+ALTER TABLE auditoria
+    ADD COLUMN IF NOT EXISTS tipo_auditoria VARCHAR(20) NOT NULL DEFAULT 'EQUIPAMENTO',
+    ADD COLUMN IF NOT EXISTS descricao      VARCHAR(255);
+
+ALTER TABLE auditoria ALTER COLUMN id_setor_auditado DROP NOT NULL;
+
+ALTER TABLE auditoria_item
+    ADD COLUMN IF NOT EXISTS quantidade_contada     INT,
+    ADD COLUMN IF NOT EXISTS numero_serie_contado   VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS id_item_estoque        UUID REFERENCES item_estoque(id_item);
+
+ALTER TABLE auditoria_item ALTER COLUMN id_equipamento DROP NOT NULL;
+
+ALTER TABLE auditoria_item ALTER COLUMN foi_encontrado DROP NOT NULL;

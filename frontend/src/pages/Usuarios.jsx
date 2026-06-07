@@ -60,7 +60,11 @@ function Usuarios() {
     return matchesSearch && matchesPerfil && matchesStatus;
   });
 
-  // --- Função para Exportar para Excel ---
+  const totalUsuarios = users.length;
+  const totalAtivos   = users.filter(u => u.status === 'ATIVO').length;
+  const totalInativos = users.filter(u => u.status === 'INATIVO').length;
+  const totalAdmins   = users.filter(u => (u.nomePerfil || '').toUpperCase() === 'ADMINISTRADOR').length;
+
   const exportToExcel = () => {
     const headers = ['Nome', 'E-mail', 'Perfil', 'Status'];
 
@@ -128,7 +132,7 @@ function Usuarios() {
 
       if (editingUser) {
         if (dataToUpdate.senha && editingUser.status === 'INATIVO') {
-          dataToUpdate.status = 'ATIVO'; // Força a ativação
+          dataToUpdate.status = 'ATIVO';
         } else {
           dataToUpdate.status = editingUser.status;
         }
@@ -138,7 +142,6 @@ function Usuarios() {
         console.log("Enviando dados para PUT:", dataToUpdate);
         await api.put(`/usuarios/${editingUser.id}`, dataToUpdate);
       } else {
-        // Novo usuário sempre começa ativo
         dataToUpdate.status = 'ATIVO';
         await api.post('/usuarios', dataToUpdate);
       }
@@ -174,6 +177,37 @@ function Usuarios() {
             <button className="btn-primary" onClick={() => handleOpenModal(null)}>+ Novo Usuário</button>
           </div>
         </header>
+
+        <section className="metrics-grid usuarios-metrics">
+          <div className="metric-card highlight">
+            <div className="metric-icon">👥</div>
+            <div className="metric-info">
+              <h3>Total de Usuários</h3>
+              <p className="metric-value">{totalUsuarios}</p>
+            </div>
+          </div>
+          <div className="metric-card success">
+            <div className="metric-icon">✅</div>
+            <div className="metric-info">
+              <h3>Ativos</h3>
+              <p className="metric-value">{totalAtivos}</p>
+            </div>
+          </div>
+          <div className="metric-card danger">
+            <div className="metric-icon">🚫</div>
+            <div className="metric-info">
+              <h3>Inativos</h3>
+              <p className="metric-value">{totalInativos}</p>
+            </div>
+          </div>
+          <div className="metric-card dark-mode">
+            <div className="metric-icon">👑</div>
+            <div className="metric-info">
+              <h3>Administradores</h3>
+              <p className="metric-value">{totalAdmins}</p>
+            </div>
+          </div>
+        </section>
 
         <div className="filters-container">
           <input

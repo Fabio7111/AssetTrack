@@ -3,6 +3,10 @@ import './Solicitacoes.css';
 import api from '../services/api';
 import imagemFundo from '../assets/fundo-solic.png';
 import detalhesIcon from '../assets/Detalhes Icon.png';
+import aprovarIcon  from '../assets/Aprovar Icon.png';
+import recusarIcon  from '../assets/Recusar Icon.png';
+import iniciarIcon  from '../assets/Iniciar Icon.png';
+import concluirIcon from '../assets/Concluir Icon.png';
 
 const STATUS_LABEL = {
   ABERTA:       'Aberta',
@@ -252,15 +256,23 @@ function Solicitacoes() {
 
                           {isGestor && s.status === 'ABERTA' && (
                               <>
-                                <button className="btn-status aprovar" onClick={() => mudarStatus(s, 'APROVADA')}>Aprovar</button>
-                                <button className="btn-status recusar" onClick={() => mudarStatus(s, 'RECUSADA')}>Recusar</button>
+                                <button className="btn-icon" title="Aprovar" onClick={() => mudarStatus(s, 'APROVADA')}>
+                                  <img src={aprovarIcon} alt="Aprovar" />
+                                </button>
+                                <button className="btn-icon" title="Recusar" onClick={() => mudarStatus(s, 'RECUSADA')}>
+                                  <img src={recusarIcon} alt="Recusar" />
+                                </button>
                               </>
                           )}
                           {isGestor && s.status === 'APROVADA' && (
-                              <button className="btn-status iniciar" onClick={() => mudarStatus(s, 'EM_ANDAMENTO')}>Iniciar</button>
+                              <button className="btn-icon" title="Iniciar" onClick={() => mudarStatus(s, 'EM_ANDAMENTO')}>
+                                <img src={iniciarIcon} alt="Iniciar" />
+                              </button>
                           )}
                           {isGestor && s.status === 'EM_ANDAMENTO' && (
-                              <button className="btn-status concluir" onClick={() => mudarStatus(s, 'CONCLUIDA')}>Concluir</button>
+                              <button className="btn-icon" title="Concluir" onClick={() => mudarStatus(s, 'CONCLUIDA')}>
+                                <img src={concluirIcon} alt="Concluir" />
+                              </button>
                           )}
 
                           {(s.status === 'CONCLUIDA' || s.status === 'RECUSADA') && !s.avaliada && (

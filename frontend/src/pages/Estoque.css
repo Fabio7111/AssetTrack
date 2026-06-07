@@ -113,7 +113,7 @@
   transition: all 0.2s;
 }
 .estoque-tab-btn:hover { background: #f5f7fa; color: #333; }
-.estoque-tab-btn.active { background-color: var(--color-primary); color: #ffffff; }
+.estoque-tab-btn.active { background-color: #b1d34b; color: var(--color-dark); }
 
 .catalog-section {
   background-color: #ffffff;
