@@ -18,7 +18,6 @@ public class ManutencaoService {
     @Autowired private SolicitacaoManutencaoRepository solicitacaoRepository;
     @Autowired private EquipamentoRepository equipamentoRepository;
     @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private AvaliacaoRepository avaliacaoRepository;
     @Autowired private ManutencaoRepository manutencaoRepository;
 
     @Transactional
@@ -112,27 +111,5 @@ public class ManutencaoService {
         return manutencaoRepository.findAll().stream()
                 .map(ManutencaoResponseDTO::new)
                 .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public Avaliacao gravarAvaliacao(AvaliacaoRequestDTO data) {
-        if (data.notaServico() < 1 || data.notaServico() > 5) {
-            throw new IllegalArgumentException("A nota do serviço deve estar entre 1 e 5.");
-        }
-
-        Manutencao manutencao = manutencaoRepository.findById(data.idManutencao())
-                .orElseThrow(() -> new IllegalArgumentException("Registro de manutenção não encontrado."));
-
-        Usuario avaliador = usuarioRepository.findById(data.idUsuarioAvaliador())
-                .orElseThrow(() -> new IllegalArgumentException("Usuário avaliador não encontrado."));
-
-        Avaliacao avaliacao = new Avaliacao();
-        avaliacao.setManutencao(manutencao);
-        avaliacao.setAvaliador(avaliador);
-        avaliacao.setNotaServico(data.notaServico());
-        avaliacao.setComentarios(data.comentarios());
-        avaliacao.setDataAvaliacao(LocalDateTime.now());
-
-        return avaliacaoRepository.save(avaliacao);
     }
 }

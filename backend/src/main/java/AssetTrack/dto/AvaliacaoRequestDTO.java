@@ -3,8 +3,8 @@ package AssetTrack.dto;
 import java.util.UUID;
 
 public record AvaliacaoRequestDTO(
-        UUID idManutencao,
-        UUID idUsuarioAvaliador,
+        UUID idSolicitacaoManutencao,
+        UUID idSolicitacaoEstoque,
         Integer notaServico,
         String comentarios
 ) {}

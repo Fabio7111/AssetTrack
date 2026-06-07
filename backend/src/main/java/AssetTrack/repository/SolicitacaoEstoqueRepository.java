@@ -8,5 +8,6 @@ import java.util.UUID;
 
 @Repository
 public interface SolicitacaoEstoqueRepository extends JpaRepository<SolicitacaoEstoque, UUID> {
-    List<SolicitacaoEstoque> findByStatusPedido(String statusPedido);
+    List<SolicitacaoEstoque> findAllByOrderByDataSolicitacaoDesc();
+    List<SolicitacaoEstoque> findByUsuarioSolicitante_IdOrderByDataSolicitacaoDesc(UUID idUsuario);
 }

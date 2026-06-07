@@ -7,4 +7,6 @@ import java.util.UUID;
 
 @Repository
 public interface AvaliacaoRepository extends JpaRepository<Avaliacao, UUID> {
+    Avaliacao findBySolicitacaoManutencao_IdSolicitacaoManutencao(UUID id);
+    Avaliacao findBySolicitacaoEstoque_IdSolicitacaoEstoque(UUID id);
 }

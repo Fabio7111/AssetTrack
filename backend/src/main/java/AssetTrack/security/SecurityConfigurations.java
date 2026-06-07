@@ -47,6 +47,19 @@ public class SecurityConfigurations {
 
                         .requestMatchers(HttpMethod.GET, "/log-acessos/me").authenticated()
 
+                        .requestMatchers(HttpMethod.PUT, "/solicitacoes/manutencao/*/status").hasAnyRole("MODERADOR", "ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/solicitacoes/estoque/*/status").hasAnyRole("MODERADOR", "ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/solicitacoes/manutencao").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/solicitacoes/estoque").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/solicitacoes/avaliar").authenticated()
+                        .requestMatchers(HttpMethod.GET,  "/solicitacoes/**").authenticated()
+
+                        .requestMatchers(HttpMethod.POST,   "/estoque/movimentacoes").hasAnyRole("MODERADOR", "ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST,   "/estoque/**").hasAnyRole("MODERADOR", "ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT,    "/estoque/**").hasAnyRole("MODERADOR", "ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.DELETE, "/estoque/**").hasAnyRole("MODERADOR", "ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET,    "/estoque/**").authenticated()
+
                         .requestMatchers(HttpMethod.POST,   "/movimentacoes/transferir").authenticated()
                         .requestMatchers(HttpMethod.PUT,    "/movimentacoes/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/movimentacoes/**").authenticated()

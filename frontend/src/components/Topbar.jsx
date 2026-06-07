@@ -17,6 +17,9 @@ function Topbar() {
   const [alertaAtivo,       setAlertaAtivo]       = useState(false);
   const [primeiroNome,      setPrimeiroNome]      = useState('');
 
+  const [alertaEstoqueAtivo, setAlertaEstoqueAtivo] = useState(false);
+  const [itensBaixoEstoque,  setItensBaixoEstoque]  = useState([]);
+
   const isPerfilActive = location.pathname === '/perfil';
 
   useEffect(() => {
@@ -35,14 +38,26 @@ function Topbar() {
   const carregarAlertas = useCallback(async () => {
     try {
       const resConfig = await api.get('/configuracoes');
-      const ativo = resConfig.data.alertaDevolucaoAtrasada;
-      setAlertaAtivo(ativo);
+      const ativoDevolucao = resConfig.data.alertaDevolucaoAtrasada;
+      const ativoEstoque   = resConfig.data.alertaBaixoEstoque;
+      setAlertaAtivo(ativoDevolucao);
+      setAlertaEstoqueAtivo(ativoEstoque);
 
-      if (ativo) {
+      if (ativoDevolucao) {
         const resAtrasadas = await api.get('/movimentacoes/atrasadas');
         setAtrasadas(resAtrasadas.data);
       } else {
         setAtrasadas([]);
+      }
+
+      if (ativoEstoque) {
+        const resEstoque = await api.get('/estoque');
+        const baixos = resEstoque.data.filter(
+            i => i.status === 'BAIXO_ESTOQUE' || i.status === 'ESGOTADO'
+        );
+        setItensBaixoEstoque(baixos);
+      } else {
+        setItensBaixoEstoque([]);
       }
     } catch (error) {
       console.error('Erro ao carregar alertas da topbar:', error);
@@ -65,7 +80,11 @@ function Topbar() {
     navigate('/login');
   };
 
-  const temAlertas = alertaAtivo && atrasadas.length > 0;
+  const temAtrasadas = alertaAtivo && atrasadas.length > 0;
+  const temBaixoEstoque = alertaEstoqueAtivo && itensBaixoEstoque.length > 0;
+  const temAlertas = temAtrasadas || temBaixoEstoque;
+
+  const STATUS_LABEL = { BAIXO_ESTOQUE: 'baixo estoque', ESGOTADO: 'esgotado' };
 
   return (
       <header className="topbar">
@@ -94,13 +113,41 @@ function Topbar() {
                   </div>
 
                   <div className="popup-body">
-                    <div className="notification-item disabled">
-                      <div className="noti-icon">📦</div>
-                      <div className="noti-content">
-                        <p className="noti-title">Baixo Estoque</p>
-                        <p className="noti-obs">Módulo de estoque ainda não configurado.</p>
-                      </div>
-                    </div>
+
+                    {!alertaEstoqueAtivo ? (
+                        <div className="notification-item disabled">
+                          <div className="noti-icon">📦</div>
+                          <div className="noti-content">
+                            <p className="noti-title">Baixo Estoque</p>
+                            <p className="noti-obs">Alerta desativado nas configurações.</p>
+                          </div>
+                        </div>
+                    ) : itensBaixoEstoque.length === 0 ? (
+                        <div className="notification-item ok">
+                          <div className="noti-icon">✅</div>
+                          <div className="noti-content">
+                            <p className="noti-title">Estoque saudável</p>
+                            <p className="noti-obs">Nenhum item em baixo estoque no momento.</p>
+                          </div>
+                        </div>
+                    ) : (
+                        itensBaixoEstoque.map(item => (
+                            <div
+                                key={item.idItem}
+                                className="notification-item unread"
+                                onClick={() => navigate('/estoque')}
+                            >
+                              <div className="noti-icon">📦</div>
+                              <div className="noti-content">
+                                <p>
+                                  O item <strong>{item.nomeItem}</strong> está em{' '}
+                                  <strong>{STATUS_LABEL[item.status] || 'baixo estoque'}</strong>
+                                  {' '}({item.quantidadeDisponivel} unid.).
+                                </p>
+                              </div>
+                            </div>
+                        ))
+                    )}
 
                     {!alertaAtivo ? (
                         <div className="notification-item disabled">

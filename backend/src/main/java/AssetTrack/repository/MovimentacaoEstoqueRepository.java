@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface MovimentacaoEstoqueRepository extends JpaRepository<MovimentacaoEstoque, UUID> {
     List<MovimentacaoEstoque> findAllByOrderByDataHoraDesc();
     List<MovimentacaoEstoque> findByItem_IdItemOrderByDataHoraDesc(UUID idItem);
+    long countByUnidade_IdUnidade(UUID idUnidade);
 }

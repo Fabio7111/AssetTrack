@@ -195,6 +195,20 @@ function Equipamentos() {
     }
   };
 
+  // --- NOVA LÓGICA DE STATUS AQUI ---
+  const getStatusInfo = (status) => {
+    switch (status) {
+      case 'ATIVO':
+        return { label: 'Ativo', className: 'ativo' };
+      case 'INATIVO':
+        return { label: 'Inativo', className: 'inativo' };
+      case 'EM_MANUTENCAO':
+        return { label: 'Em Manutenção', className: 'em-manutencao' };
+      default:
+        return { label: status, className: status?.toLowerCase().replace(/_/g, '-') };
+    }
+  };
+
   if (loading) return <div className="dashboard-loading">Carregando métricas do sistema...</div>;
 
   const getAquisicaoText = (idAq) => {
@@ -317,9 +331,10 @@ function Equipamentos() {
                         <td>{eq.nomeSetor}</td>
                         <td>{new Date(eq.dataCadastro).toLocaleDateString('pt-BR')}</td>
                         <td>
-                      <span className={`status-badge ${eq.statusAtual.toLowerCase().replace(' ', '-')}`}>
-                        {eq.statusAtual}
-                      </span>
+                          {/* APLICAÇÃO DA NOVA LÓGICA AQUI */}
+                          <span className={`status-badge ${getStatusInfo(eq.statusAtual).className}`}>
+                            {getStatusInfo(eq.statusAtual).label}
+                          </span>
                         </td>
                         <td>
                           <div className="action-buttons">
@@ -453,7 +468,7 @@ function Equipamentos() {
                     </div>
                     <div className="form-group">
                       <label>Status</label>
-                      <input type="text" value={selectedEq.statusAtual} disabled />
+                      <input type="text" value={getStatusInfo(selectedEq.statusAtual).label} disabled />
                     </div>
                   </div>
                 </div>

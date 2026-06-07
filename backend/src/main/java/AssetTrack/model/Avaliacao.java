@@ -3,6 +3,7 @@ package AssetTrack.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,14 +23,19 @@ public class Avaliacao {
     @Column(length = 500)
     private String comentarios;
 
-    @Column(name = "data_avaliacao", nullable = false)
+    @CreationTimestamp
+    @Column(name = "data_avaliacao", nullable = false, updatable = false)
     private LocalDateTime dataAvaliacao;
 
-    @OneToOne
-    @JoinColumn(name = "id_manutencao", nullable = false)
-    private Manutencao manutencao;
+    @ManyToOne
+    @JoinColumn(name = "id_solicitacao_manutencao")
+    private SolicitacaoManutencao solicitacaoManutencao;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "id_solicitacao_estoque")
+    private SolicitacaoEstoque solicitacaoEstoque;
+
+    @ManyToOne
     @JoinColumn(name = "id_usuario_avaliador", nullable = false)
     private Usuario avaliador;
 }

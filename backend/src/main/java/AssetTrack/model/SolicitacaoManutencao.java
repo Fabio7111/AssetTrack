@@ -3,6 +3,7 @@ package AssetTrack.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -16,14 +17,18 @@ public class SolicitacaoManutencao {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID idSolicitacaoManutencao;
 
-    @Column(name = "data_abertura", nullable = false)
+    @CreationTimestamp
+    @Column(name = "data_abertura", nullable = false, updatable = false)
     private LocalDateTime dataAbertura;
 
     @Column(name = "descricao_problema", nullable = false, length = 500)
     private String descricaoProblema;
 
     @Column(name = "status_solicitacao", nullable = false, length = 50)
-    private String statusSolicitacao;
+    private String statusSolicitacao = "ABERTA";
+
+    @Column(name = "data_conclusao")
+    private LocalDateTime dataConclusao;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario_solicitante", nullable = false)

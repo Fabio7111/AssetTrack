@@ -44,6 +44,7 @@ function Estoque() {
   const [editandoUnidade,          setEditandoUnidade]          = useState(null);
   const [formUnidade,              setFormUnidade]              = useState(FORM_UNIDADE_VAZIO);
   const [salvandoUnidade,          setSalvandoUnidade]          = useState(false);
+  const [erroExcluirUnidade,       setErroExcluirUnidade]       = useState('');
 
   const [modalMovAberto, setModalMovAberto] = useState(false);
   const [tipoMov,        setTipoMov]        = useState('ENTRADA');
@@ -189,13 +190,14 @@ function Estoque() {
 
   const handleExcluirUnidade = async () => {
     try {
+      setErroExcluirUnidade('');
       await api.delete(`/estoque/unidades/${unidadeSelecionada.idUnidade}`);
       setModalUnidadeDeleteAberto(false);
       setUnidadeSelecionada(null);
       carregarTudo();
       showMessage('Unidade removida.', 'success');
     } catch (error) {
-      showMessage(error.response?.data?.message || 'Erro ao remover.', 'error');
+      setErroExcluirUnidade(error.response?.data?.message || 'Erro ao remover.');
     }
   };
 
@@ -357,7 +359,7 @@ function Estoque() {
                               <button className="btn-icon" title="Editar" onClick={() => abrirModalEditarUnidade(u)}>
                                 <img src={editarIcon} alt="Editar" />
                               </button>
-                              <button className="btn-icon" title="Remover" onClick={() => { setUnidadeSelecionada(u); setModalUnidadeDeleteAberto(true); }}>
+                              <button className="btn-icon" title="Remover" onClick={() => { setUnidadeSelecionada(u); setErroExcluirUnidade(''); setModalUnidadeDeleteAberto(true); }}>
                                 <img src={excluirIcon} alt="Remover" />
                               </button>
                             </div>
@@ -472,7 +474,7 @@ function Estoque() {
                 <div className="modal-footer" style={{ marginTop: '20px' }}>
                   <button className="btn-table-action delete" onClick={() => { setModalItemDetalheAberto(false); setModalItemDeleteAberto(true); }}>Excluir</button>
                   <button className="btn-secondary" onClick={() => setModalItemDetalheAberto(false)}>Fechar</button>
-                  <button className="btn-primary" onClick={() => abrirModalEditarItem(itemSelecionado)}>Editar</button>
+                  <button className="btn-primary" onClick={() => abrirModalEditarItem(itemSelecionado)}>✏️ Editar</button>
                 </div>
               </div>
             </div>
@@ -650,15 +652,25 @@ function Estoque() {
                   <p style={{ margin: 0, color: '#444', fontSize: '15px' }}>
                     Remover a unidade <strong>{unidadeSelecionada.patrimonio || 'sem patrimônio'}</strong> de <strong>{unidadeSelecionada.nomeItem}</strong>?
                   </p>
-                  <span style={{ color: '#c0392b', fontSize: '13px', display: 'block', marginTop: '10px' }}>
-                Atenção: Esta ação não pode ser desfeita.
-              </span>
+                  {erroExcluirUnidade ? (
+                      <div style={{ marginTop: '15px', padding: '12px 15px', backgroundColor: '#fdecea', color: '#c0392b', borderRadius: '6px', fontSize: '14px', borderLeft: '4px solid #e74c3c' }}>
+                        <strong>Ação Negada:</strong> {erroExcluirUnidade}
+                      </div>
+                  ) : (
+                      <span style={{ color: '#c0392b', fontSize: '13px', display: 'block', marginTop: '10px' }}>
+                  Atenção: Esta ação não pode ser desfeita.
+                </span>
+                  )}
                 </div>
                 <div className="modal-footer" style={{ padding: '20px 0 0 0' }}>
-                  <button className="btn-secondary" onClick={() => setModalUnidadeDeleteAberto(false)}>Cancelar</button>
-                  <button className="btn-primary" style={{ backgroundColor: '#e74c3c', color: 'white' }} onClick={handleExcluirUnidade}>
-                    Confirmar
+                  <button className="btn-secondary" onClick={() => setModalUnidadeDeleteAberto(false)}>
+                    {erroExcluirUnidade ? 'Fechar' : 'Cancelar'}
                   </button>
+                  {!erroExcluirUnidade && (
+                      <button className="btn-primary" style={{ backgroundColor: '#e74c3c', color: 'white' }} onClick={handleExcluirUnidade}>
+                        Confirmar
+                      </button>
+                  )}
                 </div>
               </div>
             </div>

@@ -126,3 +126,16 @@ CREATE TABLE movimentacao_estoque (
     observacao      TEXT,
     data_hora       TIMESTAMP NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE solicitacao_manutencao
+    ADD COLUMN IF NOT EXISTS data_conclusao TIMESTAMP;
+
+ALTER TABLE solicitacao_estoque
+    ADD COLUMN IF NOT EXISTS data_conclusao TIMESTAMP,
+    ADD COLUMN IF NOT EXISTS observacao     VARCHAR(500);
+
+ALTER TABLE avaliacao
+    ADD COLUMN IF NOT EXISTS id_solicitacao_manutencao UUID REFERENCES solicitacao_manutencao(id_solicitacao_manutencao),
+    ADD COLUMN IF NOT EXISTS id_solicitacao_estoque    UUID REFERENCES solicitacao_estoque(id_solicitacao_estoque);
+
+ALTER TABLE avaliacao ALTER COLUMN id_manutencao DROP NOT NULL;

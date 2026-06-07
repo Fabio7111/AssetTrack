@@ -1,8 +1,24 @@
+:root {
+  --bg-banner: none;
+}
+
 .manutencoes-container {
   display: flex;
   flex-direction: column;
   gap: 25px;
   animation: fadeIn 0.4s ease;
+}
+
+.manutencoes-container .btn-primary {
+  background-color: var(--color-secondary);
+  color: var(--color-dark);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
 }
 
 .manutencoes-header {
@@ -25,7 +41,7 @@
   z-index: 1;
 }
 
-.manutencoes-header .header-content {
+.manutencoes-container .header-content {
   position: relative;
   z-index: 2;
   display: flex;
@@ -34,34 +50,71 @@
 }
 
 .manutencoes-header h1 { margin: 0 0 5px 0; font-size: 26px; color: #ffffff; }
+.manutencoes-header p { margin: 0; font-size: 15px; color: rgba(255, 255, 255, 0.9); }
 
-.manutencoes-header p {
-  margin: 0;
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.table-section {
+/* --- TABELA E FILTROS --- */
+.manutencoes-container .table-section {
   background-color: #ffffff;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-.table-header {
+.manutencoes-container .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-.custom-table { width: 100%; border-collapse: collapse; }
-.custom-table th, .custom-table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+.manutencoes-container .custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  border-radius: 8px;
+  overflow: hidden;
+}
 
+.manutencoes-container .custom-table th {
+  padding: 15px;
+  background-color: var(--color-dark);
+  color: #ffffff;
+  font-size: 13px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.manutencoes-container .custom-table td {
+  padding: 14px 15px;
+  border-bottom: 1px solid #eaebec;
+  font-size: 14px;
+  text-align: center;
+}
+
+.manutencoes-container .custom-table tbody tr:nth-child(even) { background-color: rgba(39, 174, 96, 0.04); }
+.manutencoes-container .custom-table tbody tr:hover { background-color: rgba(39, 174, 96, 0.08); }
+
+/* --- BADGES DE STATUS --- */
+.manutencoes-container .status-badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.manutencoes-container .status-badge.aberta { background-color: rgba(52, 152, 219, 0.15); color: #2980b9; }
+.manutencoes-container .status-badge.pendente { background-color: rgba(155, 89, 182, 0.15); color: #8e44ad; }
+.manutencoes-container .status-badge.em-andamento { background-color: rgba(241, 196, 15, 0.15); color: #d35400; }
+.manutencoes-container .status-badge.concluida { background-color: rgba(39, 174, 96, 0.15); color: #1a2520; }
+.manutencoes-container .status-badge.cancelada { background-color: rgba(231, 76, 60, 0.15); color: #c0392b; }
+
+/* --- MODAIS E BOTÕES --- */
 .modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(3px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -74,8 +127,7 @@
   border-radius: 12px;
   width: 550px;
   max-width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .modal-header {
@@ -85,57 +137,10 @@
   margin-bottom: 20px;
 }
 
-.modal-header h2 {
-  margin: 0;
-  font-size: 20px;
-  color: var(--color-dark, #333);
-}
-
-.btn-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #888;
-}
+.btn-close { background: none; border: none; font-size: 24px; color: #999; cursor: pointer; }
+.btn-close:hover { color: #333; }
 
 .modal-form { display: flex; flex-direction: column; gap: 15px; }
-
-.form-row {
-  display: flex;
-  gap: 15px;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  gap: 5px;
-}
-
-.form-group label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #555;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  outline: none;
-  font-family: inherit;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 80px;
-}
 
 .modal-footer {
   display: flex;
@@ -144,48 +149,26 @@
   margin-top: 20px;
 }
 
-.filters-container {
-  display: flex;
-  gap: 15px;
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.status-badge {
-  padding: 5px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-}
-
-.btn-icon {
-  width: 28px;
-  height: 28px;
-  padding: 4px;
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 10px 20px;
   border: none;
-  background: transparent;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.btn-icon img {
-  width: 24px;
-  height: 24px;
+.btn-secondary {
+  background-color: transparent;
+  color: #666;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.status-badge.aberta { background-color: rgba(52, 152, 219, 0.15); color: #2980b9; }
-.status-badge.pendente { background-color: rgba(155, 89, 182, 0.15); color: #8e44ad; }
-.status-badge.em-andamento { background-color: rgba(241, 196, 15, 0.15); color: #d35400; }
-.status-badge.concluida { background-color: rgba(39, 174, 96, 0.15); color: #1a2520; }
-.status-badge.cancelada { background-color: rgba(231, 76, 60, 0.15); color: #c0392b; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

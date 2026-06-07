@@ -18,6 +18,7 @@ public class UnidadeEstoqueService {
     @Autowired private ItemEstoqueRepository    itemRepository;
     @Autowired private SetorRepository          setorRepository;
     @Autowired private UsuarioRepository        usuarioRepository;
+    @Autowired private MovimentacaoEstoqueRepository movimentacaoRepository;
 
     public List<UnidadeEstoqueResponseDTO> listarPorItem(UUID idItem) {
         ItemEstoque item = itemRepository.findById(idItem)
@@ -75,6 +76,11 @@ public class UnidadeEstoqueService {
     public void deletar(UUID id) {
         UnidadeEstoque u = unidadeRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Unidade não encontrada."));
+
+        if (movimentacaoRepository.countByUnidade_IdUnidade(id) > 0) {
+            throw new IllegalStateException("Esta unidade possui movimentações registradas e não pode ser removida.");
+        }
+
         unidadeRepository.delete(u);
     }
 }

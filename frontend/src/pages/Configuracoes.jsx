@@ -127,9 +127,6 @@ function Configuracoes() {
 
   // ── Toggle — salva imediatamente no backend ───────────────────────────────
   const handleToggleChange = async (field) => {
-    // Bloqueia o toggle de estoque enquanto módulo não existe
-    if (field === 'alertaBaixoEstoque') return;
-
     const newConfig = { ...config, [field]: !config[field] };
     try {
       await api.put('/configuracoes', newConfig);
@@ -365,14 +362,16 @@ function Configuracoes() {
                   <h2>Alertas do Sistema</h2>
                   <div className="toggles-list">
 
-                    {/* ── Baixo Estoque: bloqueado até o módulo existir ── */}
-                    <div className="toggle-item toggle-disabled" title="Módulo de estoque ainda não configurado">
+                    {/* ── Baixo Estoque: funcional ── */}
+                    <div className="toggle-item">
                       <div className="toggle-info">
                         <strong>Alerta de Baixo Estoque</strong>
-                        <span>Disponível após a configuração do módulo de estoque.</span>
+                        <span>Exibe alertas na barra superior quando itens atingirem o nível mínimo de estoque.</span>
                       </div>
                       <label className="switch">
-                        <input type="checkbox" checked={false} onChange={() => {}} disabled />
+                        <input type="checkbox"
+                               checked={config.alertaBaixoEstoque}
+                               onChange={() => handleToggleChange('alertaBaixoEstoque')} />
                         <span className="slider round"></span>
                       </label>
                     </div>
